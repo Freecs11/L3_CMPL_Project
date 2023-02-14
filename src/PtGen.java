@@ -223,6 +223,21 @@ public class PtGen {
 		case 0:
 			initialisations();
 			break;
+			
+		case 1:
+			tCour = ENT ;
+			vCour = UtilLex.valEnt;
+			break;
+		case 2:
+			tCour =BOOL;
+			if(UtilLex.nomSource=="vrai") vCour=VRAI; else if(UtilLex.nomSource=="faux") vCour = FAUX; else UtilLex.messErr("expression booleenne attendue");
+			// NOT FINISHED
+			break;
+		case 3:
+			verifEnt();
+			
+			// NOT FINISHED
+			break;
 		
 		// TODO
 			
