@@ -64,14 +64,15 @@ specif  : ident  ( 'fixe' '(' type  ( ',' type  )* ')' )?
                  ( 'mod'  '(' type  ( ',' type  )* ')' )? 
   ;
   
-consts  : 'const' ( ident  '=' valeur  ptvg  )+ 
+consts  : 'const' ( ident  '=' valeur  {PtGen.pt(10);} ptvg   )+ 
   ;
   
-vars  : 'var' ( type ident  ( ','  ident  )* ptvg  )+
+// VARLOCAL etc à complété 
+vars  : 'var' ( type ident  {PtGen.pt(11);} ( ','  ident {PtGen.pt(11);} )* ptvg  )+
   ;
   
-type  : 'ent'  
-  |     'bool' 
+type  : 'ent'  {PtGen.pt(12);}
+  |     'bool' {PtGen.pt(13);}
   ;
   
 decprocs: (decproc ptvg)+
@@ -84,7 +85,7 @@ ptvg  : ';'
   | 
   ;
   
-corps : 'debut' instructions 'fin'
+corps : 'debut' instructions 'fin' { PtGen.pt(255); }
   ;
   
 parfixe: 'fixe' '(' pf ( ';' pf)* ')'
@@ -140,38 +141,38 @@ affouappel
 effixes : '(' (expression  (',' expression  )*)? ')'
   ;
   
-effmods :'(' (ident  (',' ident  )*)? ')'
+effmods :'(' (ident { PtGen.pt(24); }  (',' ident { PtGen.pt(25); }  )*)? ')'
   ; 
   
-expression: (exp1) ('ou'  exp1  )*
+expression: (exp1) ('ou'  exp1 { PtGen.pt(23); } )* 
   ;
   
-exp1  : exp2 ('et'  exp2  )*
+exp1  : exp2 ('et'  exp2 { PtGen.pt(22); } )*
   ;
   
-exp2  : 'non' exp2 
+exp2  : 'non' exp2  { PtGen.pt(21); }
   | exp3  
   ;
   
 exp3  : exp4 
-  ( '='   exp4 
-  | '<>'  exp4 
-  | '>'   exp4 
-  | '>='  exp4 
-  | '<'   exp4 
-  | '<='  exp4  
+  ( '='   exp4  { PtGen.pt(15); }
+  | '<>'  exp4  { PtGen.pt(16); }
+  | '>'   exp4  { PtGen.pt(17); }
+  | '>='  exp4  { PtGen.pt(18); }
+  | '<'   exp4  { PtGen.pt(19); }
+  | '<='  exp4   { PtGen.pt(20); }
   ) ?
   ;
   
 exp4  : exp5 
-        ('+'  exp5 
-        |'-'  exp5 
+        ('+'  exp5  { PtGen.pt(8); }
+        |'-'  exp5  { PtGen.pt(9); }
         )*
   ;
   
-exp5  : primaire 
-        (    '*'   primaire 
-          | 'div'  primaire 
+exp5  : primaire
+        (    '*'  { PtGen.pt(5) ;}  primaire { PtGen.pt(6); }
+          | 'div'  { PtGen.pt(5); }  primaire { PtGen.pt(7); }
         )*
   ;
   
@@ -180,11 +181,11 @@ primaire: valeur
   | '(' expression ')'
   ;
   
-valeur  : nbentier { PtGen.pt(1) }
-  | '+' nbentier { PtGen.pt(3) }
-  | '-' nbentier { PtGen.pt(4) }
-  | 'vrai' { PtGen.pt(2) }
-  | 'faux' { PtGen.pt(2) }
+valeur  : nbentier { PtGen.pt(1); }
+  | '+' nbentier { PtGen.pt(3); }
+  | '-' nbentier { PtGen.pt(4); }
+  | 'vrai' { PtGen.pt(2); }
+  | 'faux' { PtGen.pt(14); }
   ;
 
 // partie lexicale  : cette partie ne doit pas etre modifiee  //

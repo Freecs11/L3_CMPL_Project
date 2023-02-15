@@ -227,19 +227,167 @@ public class PtGen {
 		case 1:
 			tCour = ENT ;
 			vCour = UtilLex.valEnt;
+			po.produire(EMPILER);
+			po.produire(vCour);
 			break;
 		case 2:
 			tCour =BOOL;
-			if(UtilLex.nomSource=="vrai") vCour=VRAI; else if(UtilLex.nomSource=="faux") vCour = FAUX; else UtilLex.messErr("expression booleenne attendue");
-			// NOT FINISHED
+			vCour=VRAI;
 			break;
 		case 3:
 			verifEnt();
 			
+			
+			vCour = UtilLex.valEnt;
+			
+			po.produire(EMPILER);
+			po.produire(vCour);
+			
+			po.produire(ADD);
+			
 			// NOT FINISHED
 			break;
 		
-		// TODO
+		case 4:	
+			verifEnt();
+			po.produire(EMPILER);
+			po.produire(vCour);
+			
+			vCour = UtilLex.valEnt;
+			
+			po.produire(EMPILER);
+			po.produire(vCour);
+			
+			po.produire(SOUS);
+			
+			// NOT FINISHED
+			break;
+			
+		case 5:	
+			verifEnt();
+			po.produire(EMPILER);
+			po.produire(vCour);
+			
+			// NOT FINISHED
+			break;
+			
+		case 6:	
+			verifEnt();
+
+			po.produire(EMPILER);
+			po.produire(vCour);
+			
+			po.produire(MUL);
+			
+			break;
+			
+		case 7:	
+			verifEnt();
+
+			po.produire(EMPILER);
+			po.produire(vCour);
+			
+			po.produire(DIV);
+			
+			break;
+		
+		case 8:	
+			verifEnt();
+
+			po.produire(ADD);
+			
+			break;
+		case 9:	
+
+			po.produire(SOUS);
+			break;
+			
+		case 10:	
+			int id = presentIdent(1);
+			if(id==0) {
+				placeIdent(UtilLex.numIdCourant, CONSTANTE, tCour, vCour);
+			}
+			
+			
+			break;
+			
+		case 11:	
+			int idV = presentIdent(1);
+			if(idV==0) {
+				placeIdent(UtilLex.numIdCourant, CONSTANTE, tCour, 0);
+			}
+			break;
+			
+		
+		case 12 :
+			tCour = ENT;
+			break;
+		case 13 :
+			tCour = BOOL;
+			break;
+		case 14:
+			tCour =BOOL;
+			vCour=FAUX;
+			break;
+			
+		case 15:
+			verifEnt();
+			po.produire(EG);
+			break;
+		case 16:
+			verifEnt();
+			po.produire(DIFF);
+			break;
+		case 17:
+			verifEnt();
+			po.produire(SUP);
+			break;
+		case 18:
+			verifEnt();
+			po.produire(SUPEG);
+			break;
+		case 19:
+			verifEnt();
+			po.produire(INF);
+			break;
+		case 20:
+			verifEnt();
+			po.produire(INFEG);
+			break;
+		case 21:
+			verifBool();
+			po.produire(NON);
+			break;
+		case 22:
+			verifBool();
+			po.produire(ET);
+			break;
+		case 23:
+			verifBool();
+			po.produire(OU);
+			break;
+		
+		case 24 :
+			int idId = presentIdent(1);
+			if(idId!=0) {
+				int category = tabSymb[idId].categorie;
+				switch (category) {
+				case CONSTANTE:
+					po.produire(EMPILER);
+					po.produire(tabSymb[idId].info);
+					break;
+				case VARGLOBALE :
+					
+					break;
+				default:
+					break;
+				}
+			}
+			break;
+			
+		case 25 : 
+			
+			break;
 			
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
