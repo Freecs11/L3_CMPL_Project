@@ -68,7 +68,7 @@ consts  : 'const' ( ident  '=' valeur  {PtGen.pt(10);} ptvg   )+
   ;
   
 // VARLOCAL etc à complété 
-vars  : 'var' ( type ident  {PtGen.pt(11);} ( ','  ident {PtGen.pt(11);} )* ptvg  )+
+vars  : 'var' ( type ident  {PtGen.pt(11);} ( ','  ident {PtGen.pt(11);} )* ptvg  )+ {PtGen.pt(25);}
   ;
   
 type  : 'ent'  {PtGen.pt(12);}
@@ -126,14 +126,14 @@ inscond : 'cond'  expression  ':' instructions
 boucle  : 'ttq'  expression 'faire' instructions 'fait' 
   ;
   
-lecture: 'lire' '(' ident  ( ',' ident  )* ')' 
+lecture: 'lire' '(' ident  { PtGen.pt(29); } ( ',' ident  { PtGen.pt(29); } )* ')' 
   ;
   
-ecriture: 'ecrire' '(' expression  ( ',' expression  )* ')'
+ecriture: 'ecrire' '(' expression { PtGen.pt(28); } ( ',' expression   { PtGen.pt(28); } )* ')'
    ;
   
 affouappel
-  : ident  (    ':=' expression 
+  : ident (  { PtGen.pt(27); }   ':=' expression { PtGen.pt(26); }
             |   (effixes (effmods)?)?  
            )
   ;
@@ -141,7 +141,7 @@ affouappel
 effixes : '(' (expression  (',' expression  )*)? ')'
   ;
   
-effmods :'(' (ident { PtGen.pt(24); }  (',' ident { PtGen.pt(25); }  )*)? ')'
+effmods :'(' (ident { PtGen.pt(24); }  (',' ident { PtGen.pt(24); }  )*)? ')'
   ; 
   
 expression: (exp1) ('ou'  exp1 { PtGen.pt(23); } )* 
@@ -171,8 +171,8 @@ exp4  : exp5
   ;
   
 exp5  : primaire
-        (    '*'  { PtGen.pt(5) ;}  primaire { PtGen.pt(6); }
-          | 'div'  { PtGen.pt(5); }  primaire { PtGen.pt(7); }
+        (    '*'  primaire { PtGen.pt(6); }
+          | 'div'  primaire { PtGen.pt(7); }
         )*
   ;
   

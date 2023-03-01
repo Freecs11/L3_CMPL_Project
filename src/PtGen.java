@@ -132,6 +132,9 @@ public class PtGen {
     // bc = bloc courant (=1 si le bloc courant est le programme principal)
 	private static int it, bc;
 	
+	// compteur pour les variables 
+	private static int cpt,identCour;
+	
 	/** 
 	 * utilitaire de recherche de l'ident courant (ayant pour code UtilLex.numIdCourant) dans tabSymb
 	 * 
@@ -197,6 +200,9 @@ public class PtGen {
 		it = 0;
 		bc = 1;
 		
+		cpt = 0;
+		identCour=0;
+		
 		// pile des reprises pour compilation des branchements en avant
 		pileRep = new TPileRep(); 
 		// programme objet = code Mapile de l'unite en cours de compilation
@@ -237,7 +243,6 @@ public class PtGen {
 		case 3:
 			verifEnt();
 			
-			
 			vCour = UtilLex.valEnt;
 			
 			po.produire(EMPILER);
@@ -250,8 +255,6 @@ public class PtGen {
 		
 		case 4:	
 			verifEnt();
-			po.produire(EMPILER);
-			po.produire(vCour);
 			
 			vCour = UtilLex.valEnt;
 			
@@ -313,8 +316,10 @@ public class PtGen {
 			
 		case 11:	
 			int idV = presentIdent(1);
+			
 			if(idV==0) {
-				placeIdent(UtilLex.numIdCourant, CONSTANTE, tCour, 0);
+				placeIdent(UtilLex.numIdCourant, VARGLOBALE, tCour, cpt);
+				cpt++;
 			}
 			break;
 			
@@ -331,39 +336,39 @@ public class PtGen {
 			break;
 			
 		case 15:
-			verifEnt();
+			
 			po.produire(EG);
 			break;
 		case 16:
-			verifEnt();
+			
 			po.produire(DIFF);
 			break;
 		case 17:
-			verifEnt();
+			
 			po.produire(SUP);
 			break;
 		case 18:
-			verifEnt();
+			
 			po.produire(SUPEG);
 			break;
 		case 19:
-			verifEnt();
+			
 			po.produire(INF);
 			break;
 		case 20:
-			verifEnt();
+			
 			po.produire(INFEG);
 			break;
 		case 21:
-			verifBool();
+			
 			po.produire(NON);
 			break;
 		case 22:
-			verifBool();
+			
 			po.produire(ET);
 			break;
 		case 23:
-			verifBool();
+			
 			po.produire(OU);
 			break;
 		
@@ -377,18 +382,58 @@ public class PtGen {
 					po.produire(tabSymb[idId].info);
 					break;
 				case VARGLOBALE :
-					
+					po.produire(CONTENUG);
+					po.produire(tabSymb[idId].info);
 					break;
+					
+				// les autres catégories restent à traité .
+				
 				default:
 					break;
 				}
 			}
 			break;
 			
-		case 25 : 
+		case 25 : // pour réservé les variables 
+			po.produire(RESERVER);
+			po.produire(cpt);
+			break;
+		
+		case 26 :
+			
+			
+				po.produire(AFFECTERG);
+				po.produire(po.getIpo());
 			
 			break;
+		case 27:
+			int id_t = presentIdent(1);
+			identCour=id_t;
 			
+			if(id_t!=0) {
+				int category = tabSymb[id_t].categorie;
+				if(category == CONSTANTE) {
+					UtilLex.messErr("afffectation à une constante");
+				}
+			}
+			else {
+				UtilLex.messErr("Variable n'existe pas");
+			}
+			break;
+			
+		case 28:
+			if(tCour==ENT)  {
+				po.produire(ECRENT);
+				po.produire(po.getIpo());
+			}
+			else if(tCour==BOOL) {
+				po.produire(ECRBOOL);
+				po.produire(po.getIpo());
+			}else {
+				UtilLex.messErr("pas d'instruction pour le type neutre");
+			}
+			
+			break;
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
 			break;
