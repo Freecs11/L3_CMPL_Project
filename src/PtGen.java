@@ -434,6 +434,50 @@ public class PtGen {
 			}
 			
 			break;
+		case 29:
+			// lire 
+			break;
+			
+		case 30:
+			//SI debut
+			po.produire(BSIFAUX);
+			po.produire(0);
+			pileRep.empiler(po.getIpo());
+			break;
+		case 31:
+			//sinon
+			po.produire(BINCOND);
+			po.produire(0);
+			int si = pileRep.depiler();
+			po.modifier(si, po.getIpo()+1);
+			pileRep.empiler(po.getIpo());
+			break;
+		case 32 :
+			//fsi
+			int fsi=  pileRep.depiler();
+			po.modifier(fsi, po.getIpo()+1);
+			
+			break;
+			
+		case 33:
+			// ttq debut 
+			pileRep.empiler(po.getIpo()+1);
+			break;
+		case 34 : 
+			// ttq faire 
+			po.produire(BSIFAUX);
+			po.produire(0);
+			pileRep.empiler(po.getIpo());
+			
+			break;
+		case 35 : 
+			// ttq fin 
+			int ttq= pileRep.depiler();
+			po.modifier(ttq, po.getIpo()+1);
+			po.produire(BINCOND);
+			int ttq_base = pileRep.depiler();
+			po.produire(ttq_base);
+			break;
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
 			break;
