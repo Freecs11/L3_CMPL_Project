@@ -19,7 +19,7 @@ FICHIER DeclExp-T1.gen :
   28  et        
   29  affecterg       3
   31  contenug        0
-  33  contenug        0
+  33  empiler         5
   35  add       
   36  empiler        10
   38  mul       
@@ -28,7 +28,7 @@ FICHIER DeclExp-T1.gen :
   43  contenug        1
   45  infeg     
   46  contenug        0
-  48  contenug        0
+  48  empiler        10
   50  diff      
   51  ou        
   52  affecterg       4

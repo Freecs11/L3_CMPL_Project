@@ -135,6 +135,7 @@ public class PtGen {
 	// compteur pour les variables 
 	private static int cpt,identCour,addIdCour;
 	private static int idOuV; // 0 si id 1 si Val
+	private static boolean fromClosed;
 	
 	/** 
 	 * utilitaire de recherche de l'ident courant (ayant pour code UtilLex.numIdCourant) dans tabSymb
@@ -205,6 +206,7 @@ public class PtGen {
 		identCour=-1;
 		addIdCour=-1;
 		idOuV=-1;
+		fromClosed=false;
 		
 		// pile des reprises pour compilation des branchements en avant
 		pileRep = new TPileRep(); 
@@ -256,9 +258,10 @@ public class PtGen {
 		case 5 :
 			//identCour = presentIdent(1);
 			//System.out.println("identCourant à : "+ identCour );
+			if(!fromClosed) {
 			if(identCour==-1) {
 				//verifEnt();
-				if(tCour==ENT && idOuV!=-1)
+				if(tCour==ENT )
 				{	po.produire(EMPILER);
 					po.produire(vCour);
 					if(po.getIpo()>35 && po.getIpo()<40 ) {
@@ -278,7 +281,9 @@ public class PtGen {
 						break;
 				}
 				}
-			//identCour=-1;
+			}
+			fromClosed=false;
+			identCour=-1;
 				break;
 			
 		case 40:
@@ -291,6 +296,7 @@ public class PtGen {
 			
 			break;
 		case 42:
+			fromClosed=true;
 			idOuV=-1;
 			identCour=-1;
 			break;
@@ -318,7 +324,7 @@ public class PtGen {
 				}
 				}
 			po.produire(MUL);
-			identCour=-1;
+			//identCour=-1;
 			
 			break;
 			
@@ -352,13 +358,13 @@ public class PtGen {
 		case 8:	
 		
 			po.produire(ADD);
-			identCour=-1;
+			//identCour=-1;
 			break;
 		case 9:	
 			//verifEnt();
 				
 			po.produire(SOUS);
-			identCour=-1;
+			//identCour=-1;
 			break;
 			
 		case 10:	
