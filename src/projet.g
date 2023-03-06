@@ -34,8 +34,8 @@ import java.io.FileInputStream;
 catch (RecognitionException e) {reportError (e) ; throw e ; }}
 
 
-unite  :   unitprog  EOF
-      |    unitmodule  EOF
+unite  :   unitprog  EOF {PtGen.pt(254);}
+      |    unitmodule  EOF {PtGen.pt(254);}
   ;
   
 unitprog
@@ -67,7 +67,7 @@ specif  : ident  ( 'fixe' '(' type  ( ',' type  )* ')' )?
 consts  : 'const' ( ident  '=' valeur  {PtGen.pt(10);} ptvg   )+ 
   ;
   
-// VARLOCAL etc à complété 
+// VARLOCAL etc à compléter
 vars  : 'var' ( type ident  {PtGen.pt(11);} ( ','  ident {PtGen.pt(11);} )* ptvg  )+ {PtGen.pt(25);}
   ;
   
@@ -165,20 +165,20 @@ exp3  : exp4
   ;
   
 exp4  : exp5 
-        ('+'  exp5  { PtGen.pt(8); }
-        |'-'  exp5  { PtGen.pt(9); }
+        ('+'   exp5  { PtGen.pt(8); }
+        |'-' exp5  { PtGen.pt(9); }
         )*
   ;
   
-exp5  : primaire
-        (    '*'  primaire { PtGen.pt(6); }
-          | 'div'  primaire { PtGen.pt(7); }
+exp5  : primaire { PtGen.pt(5); } 
+        (   '*'   primaire { PtGen.pt(6); }
+          | 'div'   primaire { PtGen.pt(7); }
         )*
   ;
   
-primaire: valeur 
-  | ident  
-  | '(' expression ')'
+primaire: valeur  {PtGen.pt(41);}
+  | ident  {PtGen.pt(40);}
+  |'(' expression ')'{PtGen.pt(42);}
   ;
   
 valeur  : nbentier { PtGen.pt(1); }

@@ -133,7 +133,8 @@ public class PtGen {
 	private static int it, bc;
 	
 	// compteur pour les variables 
-	private static int cpt,identCour;
+	private static int cpt,identCour,addIdCour;
+	private static int idOuV; // 0 si id 1 si Val
 	
 	/** 
 	 * utilitaire de recherche de l'ident courant (ayant pour code UtilLex.numIdCourant) dans tabSymb
@@ -201,7 +202,9 @@ public class PtGen {
 		bc = 1;
 		
 		cpt = 0;
-		identCour=0;
+		identCour=-1;
+		addIdCour=-1;
+		idOuV=-1;
 		
 		// pile des reprises pour compilation des branchements en avant
 		pileRep = new TPileRep(); 
@@ -233,76 +236,129 @@ public class PtGen {
 		case 1:
 			tCour = ENT ;
 			vCour = UtilLex.valEnt;
-			po.produire(EMPILER);
-			po.produire(vCour);
+			
 			break;
 		case 2:
 			tCour =BOOL;
 			vCour=VRAI;
 			break;
 		case 3:
-			verifEnt();
-			
+			tCour = ENT ;
 			vCour = UtilLex.valEnt;
 			
-			po.produire(EMPILER);
-			po.produire(vCour);
-			
-			po.produire(ADD);
-			
-			// NOT FINISHED
 			break;
 		
 		case 4:	
-			verifEnt();
-			
-			vCour = UtilLex.valEnt;
-			
-			po.produire(EMPILER);
-			po.produire(vCour);
-			
-			po.produire(SOUS);
-			
-			// NOT FINISHED
+			tCour = ENT ;
+			vCour = -UtilLex.valEnt;
 			break;
+		
+		case 5 :
+			//identCour = presentIdent(1);
+			//System.out.println("identCourant à : "+ identCour );
+			if(identCour==-1) {
+				//verifEnt();
+				if(tCour==ENT && idOuV!=-1)
+				{	po.produire(EMPILER);
+					po.produire(vCour);
+					if(po.getIpo()>35 && po.getIpo()<40 ) {
+						System.out.println("produced : EMPILER " +vCour);
+						}
+				}
+				}else {
+					int categor = tabSymb[identCour].categorie;
+					switch (categor) {
+					case CONSTANTE:
+						po.produire(EMPILER);
+						po.produire(tabSymb[identCour].info);
+						break;
+					case VARGLOBALE :
+						po.produire(CONTENUG);
+						po.produire(tabSymb[identCour].info);
+						break;
+				}
+				}
+			//identCour=-1;
+				break;
 			
-		case 5:	
-			verifEnt();
-			po.produire(EMPILER);
-			po.produire(vCour);
+		case 40:
+			identCour = presentIdent(1);
+			idOuV=1;
 			
-			// NOT FINISHED
 			break;
+		case 41:
+			idOuV=0;
 			
+			break;
+		case 42:
+			idOuV=-1;
+			identCour=-1;
+			break;
 		case 6:	
-			verifEnt();
-
-			po.produire(EMPILER);
-			po.produire(vCour);
-			
+			if(identCour==-1) {
+				//verifEnt();
+				if(tCour==ENT && idOuV!=-1 )
+				{
+				po.produire(EMPILER);
+				po.produire(vCour);
+				if(po.getIpo()>35) {
+				//System.out.println("produced : EMPILER " +vCour);
+				}}
+				}else {
+					int categor = tabSymb[identCour].categorie;
+					switch (categor) {
+					case CONSTANTE:
+						po.produire(EMPILER);
+						po.produire(tabSymb[identCour].info);
+						break;
+					case VARGLOBALE :
+						po.produire(CONTENUG);
+						po.produire(tabSymb[identCour].info);
+						break;
+				}
+				}
 			po.produire(MUL);
+			identCour=-1;
 			
 			break;
 			
 		case 7:	
-			verifEnt();
-
-			po.produire(EMPILER);
-			po.produire(vCour);
+//			identCour = presentIdent(1);
+			if(identCour==-1) {
+				//verifEnt();
+				if(tCour==ENT && idOuV!=-1)
+				{
+				po.produire(EMPILER);
+				po.produire(vCour);
+				}
+				}else {
+					int categor = tabSymb[identCour].categorie;
+					switch (categor) {
+					case CONSTANTE:
+						po.produire(EMPILER);
+						po.produire(tabSymb[identCour].info);
+						break;
+					case VARGLOBALE :
+						po.produire(CONTENUG);
+						po.produire(tabSymb[identCour].info);
+						break;
+				}
+				}
 			
 			po.produire(DIV);
-			
+			//identCour=-1;
 			break;
 		
 		case 8:	
-			verifEnt();
-
+		
 			po.produire(ADD);
-			
+			identCour=-1;
 			break;
 		case 9:	
-
+			//verifEnt();
+				
 			po.produire(SOUS);
+			identCour=-1;
 			break;
 			
 		case 10:	
@@ -322,16 +378,16 @@ public class PtGen {
 				cpt++;
 			}
 			break;
-			
 		
-		case 12 :
-			tCour = ENT;
+		case 12:
+			tCour=ENT;
 			break;
-		case 13 :
+		case 13: 
 			tCour = BOOL;
 			break;
-		case 14:
-			tCour =BOOL;
+	
+		case 14: // faux 
+			tCour = BOOL;
 			vCour=FAUX;
 			break;
 			
@@ -401,9 +457,13 @@ public class PtGen {
 		
 		case 26 :
 			
-			
+			if(addIdCour!=-1) {
 				po.produire(AFFECTERG);
-				po.produire(po.getIpo());
+				po.produire(addIdCour);
+				addIdCour=-1;
+			}else {
+				UtilLex.messErr("erreur dans l'@ de ident ");
+			}
 			
 			break;
 		case 27:
@@ -415,6 +475,9 @@ public class PtGen {
 				if(category == CONSTANTE) {
 					UtilLex.messErr("afffectation à une constante");
 				}
+				if(category == VARGLOBALE ) {
+					addIdCour = tabSymb[id_t].info;
+				}
 			}
 			else {
 				UtilLex.messErr("Variable n'existe pas");
@@ -422,17 +485,19 @@ public class PtGen {
 			break;
 			
 		case 28:
-			if(tCour==ENT)  {
-				po.produire(ECRENT);
-				po.produire(po.getIpo());
-			}
-			else if(tCour==BOOL) {
-				po.produire(ECRBOOL);
-				po.produire(po.getIpo());
-			}else {
-				UtilLex.messErr("pas d'instruction pour le type neutre");
-			}
 			
+					if(tCour==ENT) {
+						
+						po.produire(ECRENT);
+						
+					}else if (tCour==BOOL) {
+						
+						po.produire(ECRBOOL);
+					}else {
+						UtilLex.messErr("pas d'instruction pour le type neutre");
+					}
+					
+				
 			break;
 		case 29:
 			// lire 
@@ -477,6 +542,12 @@ public class PtGen {
 			po.produire(BINCOND);
 			int ttq_base = pileRep.depiler();
 			po.produire(ttq_base);
+			break;
+			
+		case 254 : 
+			po.produire(ARRET);
+			po.constObj();
+			po.constGen();
 			break;
 		case 255 : 
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
