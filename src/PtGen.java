@@ -258,17 +258,12 @@ public class PtGen {
 		case 5:
 			// identCour = presentIdent(1);
 			// System.out.println("identCourant à : "+ identCour );
-			if (!fromClosed) {
-				if (identCour == -1) {
-					// verifEnt();
-					if (tCour == ENT) {
-						po.produire(EMPILER);
-						po.produire(vCour);
-						if (po.getIpo() > 35 && po.getIpo() < 40) {
-							System.out.println("produced : EMPILER " + vCour);
-						}
-					}
-				} else {
+			//if (!fromClosed) {
+				if(idOuV==0) {
+					po.produire(EMPILER);
+					po.produire(vCour);
+				}
+				else if (identCour != -1) {
 					int categor = tabSymb[identCour].categorie;
 					switch (categor) {
 					case CONSTANTE:
@@ -278,18 +273,26 @@ public class PtGen {
 					case VARGLOBALE:
 						po.produire(CONTENUG);
 						po.produire(tabSymb[identCour].info);
+						if (po.getIpo() > 5 && po.getIpo() < 18) {
+							System.out.println("produced : CONTENUG " + tabSymb[identCour].info);
+						}
 						break;
 					}
-				}
+					
+				//}
 			}
 			fromClosed = false;
 			identCour = -1;
+			
 			break;
 
 		case 40:
 			identCour = presentIdent(1);
 			idOuV = 1;
 
+			break;
+		case 43:
+			fromClosed=true;
 			break;
 		case 41:
 			idOuV = 0;
@@ -332,7 +335,7 @@ public class PtGen {
 			// identCour = presentIdent(1);
 			if (identCour == -1) {
 				// verifEnt();
-				if (tCour == ENT && idOuV != -1) {
+				if (tCour == ENT && idOuV != -1 && idOuV!=1) {
 					po.produire(EMPILER);
 					po.produire(vCour);
 				}
@@ -351,19 +354,20 @@ public class PtGen {
 			}
 
 			po.produire(DIV);
-			// identCour=-1;
+			identCour=-1;
+			idOuV=-1;
 			break;
 
 		case 8:
 
 			po.produire(ADD);
-			// identCour=-1;
+			identCour=-1;
 			break;
 		case 9:
 			// verifEnt();
 
 			po.produire(SOUS);
-			// identCour=-1;
+			identCour=-1;
 			break;
 
 		case 10:
@@ -434,7 +438,7 @@ public class PtGen {
 
 		case 24:
 			int idId = presentIdent(1);
-			if (idId != 0) {
+			if (idId != 0 && idOuV!=-1 && idOuV!=1) {
 				int category = tabSymb[idId].categorie;
 				switch (category) {
 				case CONSTANTE:
@@ -452,6 +456,8 @@ public class PtGen {
 					break;
 				}
 			}
+			identCour=-idId;
+			idOuV=1;
 			break;
 
 		case 25: // pour réservé les variables
@@ -485,6 +491,7 @@ public class PtGen {
 			} else {
 				UtilLex.messErr("Variable n'existe pas");
 			}
+			idOuV=1;
 			break;
 
 		case 28:
@@ -510,7 +517,7 @@ public class PtGen {
 					UtilLex.messErr("pas d'instruction pour le type neutre");
 				}
 			} else {
-				UtilLex.messErr("Erreur dans ecrire");
+				//UtilLex.messErr("Erreur dans ecrire");
 			}
 
 			break;
@@ -551,6 +558,7 @@ public class PtGen {
 			pileRep.empiler(po.getIpo());
 			break;
 		case 31:
+			System.out.println("executé");
 			// sinon
 			po.produire(BINCOND);
 			po.produire(0);
@@ -579,7 +587,7 @@ public class PtGen {
 		case 35:
 			// ttq fin
 			int ttq = pileRep.depiler();
-			po.modifier(ttq, po.getIpo() + 1);
+			po.modifier(ttq, po.getIpo() + 3);
 			po.produire(BINCOND);
 			int ttq_base = pileRep.depiler();
 			po.produire(ttq_base);

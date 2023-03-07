@@ -114,7 +114,7 @@ instruction
   |
   ;
   
-inssi : 'si' expression { PtGen.pt(30); } 'alors' instructions { PtGen.pt(31); } ('sinon'  instructions)? 'fsi' { PtGen.pt(32); } 
+inssi : 'si' expression { PtGen.pt(30); } 'alors' instructions  ( 'sinon' {PtGen.pt(31); } instructions )?  'fsi'{ PtGen.pt(32); }
   ;
   
 inscond : 'cond'  expression  ':' instructions 
@@ -170,15 +170,15 @@ exp4  : exp5
         )*
   ;
   
-exp5  : primaire { PtGen.pt(5); } 
-        (   '*'   primaire { PtGen.pt(6); }
-          | 'div'   primaire { PtGen.pt(7); }
+exp5  : primaire { PtGen.pt(5); }
+        (   '*'    primaire { PtGen.pt(6); }
+          | 'div'  primaire { PtGen.pt(7); }
         )*
   ;
   
 primaire: valeur  {PtGen.pt(41);}
   | ident  {PtGen.pt(40);}
-  |'(' expression ')'{PtGen.pt(42);}
+  |'('{PtGen.pt(43);} expression ')'{PtGen.pt(42);}
   ;
   
 valeur  : nbentier { PtGen.pt(1); }

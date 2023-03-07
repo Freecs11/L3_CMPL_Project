@@ -5,14 +5,14 @@ FICHIER polyP11-exo-simple.gen :
    5  lirent    
    6  contenug        1
    8  affecterg       0
-  10  contenug        3
+  10  empiler         0
   12  affecterg       3
-  14  contenug        4
+  14  empiler         0
   16  affecterg       4
   18  contenug        0
   20  empiler         0
   22  sup       
-  23  bsifaux        55
+  23  bsifaux        57
   25  affecterg       2
   27  lirent    
   28  contenug        3
@@ -23,7 +23,7 @@ FICHIER polyP11-exo-simple.gen :
   37  empiler        -5
   39  eg        
   40  bsifaux        48
-  42  contenug        4
+  42  empiler         1
   44  affecterg       4
   46  bincond        48
   48  contenug        0
