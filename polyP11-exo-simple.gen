@@ -1,0 +1,38 @@
+FICHIER polyP11-exo-simple.gen : 
+
+   1  reserver        5
+   3  affecterg       1
+   5  lirent    
+   6  contenug        1
+   8  affecterg       0
+  10  contenug        3
+  12  affecterg       3
+  14  contenug        4
+  16  affecterg       4
+  18  contenug        0
+  20  empiler         0
+  22  sup       
+  23  bsifaux        55
+  25  affecterg       2
+  27  lirent    
+  28  contenug        3
+  30  contenug        2
+  32  add       
+  33  affecterg       3
+  35  contenug        2
+  37  empiler        -5
+  39  eg        
+  40  bsifaux        48
+  42  contenug        4
+  44  affecterg       4
+  46  bincond        48
+  48  contenug        0
+  50  empiler         1
+  52  sous      
+  53  affecterg       0
+  55  bincond        18
+  57  contenug        3
+  59  ecrent    
+  60  contenug        4
+  62  ecrbool   
+  63  arret     
