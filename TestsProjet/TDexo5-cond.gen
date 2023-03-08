@@ -17,32 +17,30 @@ FICHIER TestsProjet/TDexo5-cond.gen :
   23  bsifaux        30
   25  empiler         1
   27  ecrent    
-  28  bincond        -1
+  28  bincond        75
   30  contenug        1
-  32  bsifaux        -1
+  32  bsifaux        66
   34  contenug        2
   36  bsifaux        43
   38  empiler         2
   40  ecrent    
-  41  bincond        -1
+  41  bincond        64
   43  contenug        3
   45  bsifaux        52
   47  empiler         3
   49  ecrent    
-  50  bincond        -1
+  50  bincond        64
   52  contenug        4
   54  bsifaux        61
   56  empiler         4
   58  ecrent    
-  59  bincond        70
-  61  bsifaux        68
-  63  empiler         5
-  65  ecrent    
-  66  bincond        68
-  68  bincond        -1
-  70  contenug        5
-  72  bsifaux        79
-  74  empiler         6
-  76  ecrent    
-  77  bincond        79
-  79  arret     
+  59  bincond        64
+  61  empiler         5
+  63  ecrent    
+  64  bincond        75
+  66  contenug        5
+  68  bsifaux        75
+  70  empiler         6
+  72  ecrent    
+  73  bincond        75
+  75  arret     

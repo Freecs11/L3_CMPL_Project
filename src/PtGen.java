@@ -115,7 +115,7 @@ public class PtGen {
 
 	// MERCI de renseigner ici un nom pour le trinome, constitue EXCLUSIVEMENT DE
 	// LETTRES
-	public static String trinome = "XxxYyyZzz";
+	public static String trinome = "BouhmadRachid_BoquainMathis_FallSerigne";
 
 	private static int tCour; // type de l'expression compilee
 	private static int vCour; // sert uniquement lors de la compilation d'une valeur (entiere ou boolenne)
@@ -606,14 +606,14 @@ public class PtGen {
 		case 30:
 			// SI debut
 			po.produire(BSIFAUX);
-			po.produire(-1);
+			po.produire(0);
 			pileRep.empiler(po.getIpo());
 			break;
 		case 31:
 			System.out.println("executé");
 			// sinon
 			po.produire(BINCOND);
-			po.produire(-1);
+			po.produire(0);
 			int si = pileRep.depiler();
 			po.modifier(si, po.getIpo() + 1);
 			pileRep.empiler(po.getIpo());
@@ -632,7 +632,7 @@ public class PtGen {
 		case 34:
 			// ttq faire
 			po.produire(BSIFAUX);
-			po.produire(-1);
+			po.produire(0);
 			pileRep.empiler(po.getIpo());
 
 			break;
@@ -648,25 +648,31 @@ public class PtGen {
 			pileRep.empiler(0);
 			break;
 		case 61:
+			verifBool();
 			po.produire(BSIFAUX);
-			po.produire(-1);
+			po.produire(0);
 			pileRep.empiler(po.getIpo());
 			break;
 		case 62:
-			po.modifier(pileRep.depiler(), po.getIpo()+3);
+			po.modifier(pileRep.depiler(), po.getIpo()+3 );
 			po.produire(BINCOND);
-			po.produire(-1);
-			pileRep.depiler();
+			po.produire(pileRep.depiler());
 			pileRep.empiler(po.getIpo());
 			break;
-		case 63:
-			po.modifier(pileRep.depiler(), po.getIpo()+3);
-			po.produire(BINCOND);
-			po.produire(-1);
-			pileRep.empiler(po.getIpo());
-			break;
+	
 		case 64:
-			po.modifier(pileRep.depiler(), po.getIpo()+1);
+			int t = pileRep.depiler();
+			int l = po.getElt(t);
+			po.modifier(t, po.getIpo()+1 );
+			t=l;
+			l = po.getElt(t);
+			
+			while(t!=0) {
+			po.modifier(t, po.getIpo()+1 );
+			t=l;
+			l = po.getElt(t);
+			
+			}
 			break;
 		case 254:
 			po.produire(ARRET);

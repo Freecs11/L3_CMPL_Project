@@ -118,8 +118,8 @@ inssi : 'si' expression { PtGen.pt(30); } 'alors' instructions  ( 'sinon' {PtGen
   ;
   
 inscond : 'cond' { PtGen.pt(60); }  expression { PtGen.pt(61); }  ':' instructions { PtGen.pt(62); }
-          (','  expression { PtGen.pt(61); } ':' instructions { PtGen.pt(63); })* 
-          ('aut' { PtGen.pt(61); } instructions { PtGen.pt(63); } |  ) 
+          (','  expression { PtGen.pt(61); } ':' instructions { PtGen.pt(62); })* 
+          ('aut'  instructions  |  ) 
           'fcond' { PtGen.pt(64); }
   ;
   
