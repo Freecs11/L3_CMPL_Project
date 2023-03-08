@@ -1,0 +1,40 @@
+FICHIER TestsProjet/polyP31-exo4.gen : 
+
+   1  reserver        3
+   3  lirent    
+   4  affecterg       0
+   6  contenug        0
+   8  empiler        -1
+  10  eg        
+  11  bsifaux        23
+  13  empiler         0
+  15  affecterg       1
+  17  empiler         0
+  19  affecterg       2
+  21  bincond        31
+  23  contenug        0
+  25  affecterg       1
+  27  contenug        0
+  29  affecterg       2
+  31  contenug        0
+  33  empiler        -1
+  35  diff      
+  36  bsifaux        61
+  38  contenug        0
+  40  contenug        2
+  42  sup       
+  43  contenug        0
+  45  affecterg       2
+  47  contenug        0
+  49  contenug        1
+  51  inf       
+  52  contenug        0
+  54  affecterg       1
+  56  lirent    
+  57  affecterg       0
+  59  bincond        31
+  61  contenug        1
+  63  ecrent    
+  64  contenug        2
+  66  ecrent    
+  67  arret     

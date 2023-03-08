@@ -206,6 +206,7 @@ public class PtGen {
 		addIdCour = -1;
 		idOuV = -1;
 		fromClosed = false;
+		
 
 		// pile des reprises pour compilation des branchements en avant
 		pileRep = new TPileRep();
@@ -238,28 +239,32 @@ public class PtGen {
 		case 1:
 			tCour = ENT;
 			vCour = UtilLex.valEnt;
+			
 
 			break;
 		case 2:
 			tCour = BOOL;
 			vCour = VRAI;
+			
 			break;
 		case 3:
 			tCour = ENT;
 			vCour = UtilLex.valEnt;
+			
 
 			break;
 
 		case 4:
 			tCour = ENT;
 			vCour = -UtilLex.valEnt;
+		
 			break;
 
 		case 5:
 			// identCour = presentIdent(1);
 			// System.out.println("identCourant à : "+ identCour );
 			//if (!fromClosed) {
-				if(idOuV==0) {
+				if(idOuV==0 && idOuV != -1) {
 					po.produire(EMPILER);
 					po.produire(vCour);
 				}
@@ -286,9 +291,29 @@ public class PtGen {
 			
 			break;
 
+		case 50 :
+			// pour les verifications des entiers
+				verifEnt();
+			
+			
+			break;
+			
+		case 51:
+			// pour les verifications des bool
+			verifBool();
+
+			
+			break;
 		case 40:
 			identCour = presentIdent(1);
-			idOuV = 1;
+			idOuV=1;
+			int typIdent = tabSymb[identCour].type;
+			if(typIdent==ENT) {
+				tCour=ENT;
+			}
+			if (typIdent==BOOL) {
+				tCour=BOOL;
+			}
 
 			break;
 		case 43:
@@ -327,6 +352,7 @@ public class PtGen {
 				}
 			}
 			po.produire(MUL);
+			tCour=ENT;
 			// identCour=-1;
 
 			break;
@@ -356,18 +382,23 @@ public class PtGen {
 			po.produire(DIV);
 			identCour=-1;
 			idOuV=-1;
+			tCour=ENT;
 			break;
 
 		case 8:
 
 			po.produire(ADD);
 			identCour=-1;
+			tCour=ENT;
+			
 			break;
 		case 9:
 			// verifEnt();
 
 			po.produire(SOUS);
 			identCour=-1;
+			tCour=ENT;
+			
 			break;
 
 		case 10:
@@ -402,38 +433,56 @@ public class PtGen {
 		case 15:
 
 			po.produire(EG);
+			tCour=BOOL;
+			
 			break;
 		case 16:
 
 			po.produire(DIFF);
+			tCour=BOOL;
+			
 			break;
 		case 17:
 
 			po.produire(SUP);
+			tCour=BOOL;
+			
 			break;
 		case 18:
 
 			po.produire(SUPEG);
+			tCour=BOOL;
+			
 			break;
 		case 19:
 
 			po.produire(INF);
+			tCour=BOOL;
+			
 			break;
 		case 20:
 
 			po.produire(INFEG);
+			tCour=BOOL;
+			
 			break;
 		case 21:
 
 			po.produire(NON);
+			tCour=BOOL;
+			
 			break;
 		case 22:
 
 			po.produire(ET);
+			tCour=BOOL;
+			
 			break;
 		case 23:
 
 			po.produire(OU);
+			tCour=BOOL;
+			
 			break;
 
 		case 24:
@@ -523,7 +572,6 @@ public class PtGen {
 			break;
 		case 29:
 			// lire
-			
 				identCour = presentIdent(1);
 				int category = tabSymb[identCour].categorie;
 				int type = tabSymb[identCour].type;
@@ -533,13 +581,17 @@ public class PtGen {
 					break;
 				case VARGLOBALE:
 					if (type == ENT) {
-						po.produire(AFFECTERG);
-						po.produire(tabSymb[identCour].info);
 						po.produire(LIRENT);
+						po.produire(AFFECTERG);
+						
+						po.produire(tabSymb[identCour].info);
+						
 					} else if (type == BOOL) {
+						po.produire(LIREBOOL);
 						po.produire(AFFECTERG);
+						
 						po.produire(tabSymb[identCour].info);
-						po.produire(LIRENT);
+						
 					} else {
 						UtilLex.messErr("pas d'instruction pour le type neutre");
 					}
@@ -554,14 +606,14 @@ public class PtGen {
 		case 30:
 			// SI debut
 			po.produire(BSIFAUX);
-			po.produire(0);
+			po.produire(-1);
 			pileRep.empiler(po.getIpo());
 			break;
 		case 31:
 			System.out.println("executé");
 			// sinon
 			po.produire(BINCOND);
-			po.produire(0);
+			po.produire(-1);
 			int si = pileRep.depiler();
 			po.modifier(si, po.getIpo() + 1);
 			pileRep.empiler(po.getIpo());
@@ -580,7 +632,7 @@ public class PtGen {
 		case 34:
 			// ttq faire
 			po.produire(BSIFAUX);
-			po.produire(0);
+			po.produire(-1);
 			pileRep.empiler(po.getIpo());
 
 			break;
@@ -592,7 +644,30 @@ public class PtGen {
 			int ttq_base = pileRep.depiler();
 			po.produire(ttq_base);
 			break;
-
+		case 60:
+			pileRep.empiler(0);
+			break;
+		case 61:
+			po.produire(BSIFAUX);
+			po.produire(-1);
+			pileRep.empiler(po.getIpo());
+			break;
+		case 62:
+			po.modifier(pileRep.depiler(), po.getIpo()+3);
+			po.produire(BINCOND);
+			po.produire(-1);
+			pileRep.depiler();
+			pileRep.empiler(po.getIpo());
+			break;
+		case 63:
+			po.modifier(pileRep.depiler(), po.getIpo()+3);
+			po.produire(BINCOND);
+			po.produire(-1);
+			pileRep.empiler(po.getIpo());
+			break;
+		case 64:
+			po.modifier(pileRep.depiler(), po.getIpo()+1);
+			break;
 		case 254:
 			po.produire(ARRET);
 			po.constObj();

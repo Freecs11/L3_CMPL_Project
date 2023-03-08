@@ -117,10 +117,10 @@ instruction
 inssi : 'si' expression { PtGen.pt(30); } 'alors' instructions  ( 'sinon' {PtGen.pt(31); } instructions )?  'fsi'{ PtGen.pt(32); }
   ;
   
-inscond : 'cond'  expression  ':' instructions 
-          (','  expression  ':' instructions )* 
-          ('aut'  instructions |  ) 
-          'fcond' 
+inscond : 'cond' { PtGen.pt(60); }  expression { PtGen.pt(61); }  ':' instructions { PtGen.pt(62); }
+          (','  expression { PtGen.pt(61); } ':' instructions { PtGen.pt(63); })* 
+          ('aut' { PtGen.pt(61); } instructions { PtGen.pt(63); } |  ) 
+          'fcond' { PtGen.pt(64); }
   ;
   
 boucle  : 'ttq'  { PtGen.pt(33); } expression 'faire'{ PtGen.pt(34); } instructions 'fait'  { PtGen.pt(35 ); }
@@ -144,35 +144,35 @@ effixes : '(' (expression  (',' expression  )*)? ')'
 effmods :'(' (ident { PtGen.pt(24); }  (',' ident { PtGen.pt(24); }  )*)? ')'
   ; 
   
-expression: (exp1) ('ou'  exp1 { PtGen.pt(23); } )* 
+expression: (exp1) ('ou' { PtGen.pt(51); } exp1 { PtGen.pt(23); } )* 
   ;
   
-exp1  : exp2 ('et'  exp2 { PtGen.pt(22); } )*
+exp1  : exp2 ('et' { PtGen.pt(51); }  exp2 { PtGen.pt(51); }  { PtGen.pt(22); } )*
   ;
   
-exp2  : 'non' exp2  { PtGen.pt(21); }
+exp2  : 'non' exp2 { PtGen.pt(51); }  { PtGen.pt(21); }
   | exp3  
   ;
   
 exp3  : exp4 
-  ( '='   exp4  { PtGen.pt(15); }
-  | '<>'  exp4  { PtGen.pt(16); }
-  | '>'   exp4  { PtGen.pt(17); }
-  | '>='  exp4  { PtGen.pt(18); }
-  | '<'   exp4  { PtGen.pt(19); }
-  | '<='  exp4   { PtGen.pt(20); }
+  ( '='  { PtGen.pt(50); }   exp4  { PtGen.pt(50); }  { PtGen.pt(15); }
+  | '<>' { PtGen.pt(50); }   exp4  { PtGen.pt(50); }  { PtGen.pt(16); }
+  | '>'   { PtGen.pt(50); }  exp4  { PtGen.pt(50); }  { PtGen.pt(17); }
+  | '>='  { PtGen.pt(50); }  exp4  { PtGen.pt(50); }  { PtGen.pt(18); }
+  | '<'   { PtGen.pt(50); }  exp4  { PtGen.pt(50); }  { PtGen.pt(19); }
+  | '<='  { PtGen.pt(50); }  exp4  { PtGen.pt(50); }   { PtGen.pt(20); }
   ) ?
   ;
   
 exp4  : exp5 
-        ('+'   exp5  { PtGen.pt(8); }
-        |'-' exp5  { PtGen.pt(9); }
+        ('+'  { PtGen.pt(50); }   exp5 { PtGen.pt(50); } { PtGen.pt(8); }
+        | '-' { PtGen.pt(50); }  exp5 { PtGen.pt(50); } { PtGen.pt(9); }
         )*
   ;
   
 exp5  : primaire { PtGen.pt(5); }
-        (   '*'    primaire { PtGen.pt(6); }
-          | 'div'  primaire { PtGen.pt(7); }
+        (   '*'  { PtGen.pt(50); }  primaire { PtGen.pt(50); } { PtGen.pt(6); }
+          | 'div' { PtGen.pt(50); }  primaire { PtGen.pt(50); } { PtGen.pt(7); }
         )*
   ;
   
