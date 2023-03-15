@@ -130,7 +130,7 @@ public class PtGen {
 	private static int it, bc;
 
 	// compteur pour les variables
-	private static int cpt, identCour, addIdCour;
+	private static int cpt, identCour, addIdCour , cptlc;
 	private static int idOuV; // 0 si id 1 si Val
 	private static boolean fromClosed;
 
@@ -201,7 +201,7 @@ public class PtGen {
 		it = 0;
 		bc = 1;
 
-		cpt = 0;
+		cpt = 0; cptlc=0;
 		identCour = -1;
 		addIdCour = -1;
 		idOuV = -1;
@@ -278,13 +278,26 @@ public class PtGen {
 					case VARGLOBALE:
 						po.produire(CONTENUG);
 						po.produire(tabSymb[identCour].info);
-						if (po.getIpo() > 5 && po.getIpo() < 18) {
-							System.out.println("produced : CONTENUG " + tabSymb[identCour].info);
-						}
 						break;
-					}
 					
-				//}
+					case VARLOCALE:
+						
+						po.produire(CONTENUL);
+						po.produire(tabSymb[identCour].info);
+						po.produire(0);
+						break;
+					case PARAMMOD:
+						po.produire(CONTENUL);
+						po.produire(tabSymb[identCour].info);
+						po.produire(1);
+						break;
+					case PARAMFIXE:
+						po.produire(CONTENUL);
+						po.produire(tabSymb[identCour].info);
+						po.produire(0);
+						break;
+						
+				}
 			}
 			fromClosed = false;
 			identCour = -1;
@@ -334,9 +347,7 @@ public class PtGen {
 				if (tCour == ENT && idOuV != -1) {
 					po.produire(EMPILER);
 					po.produire(vCour);
-					if (po.getIpo() > 35) {
-						// System.out.println("produced : EMPILER " +vCour);
-					}
+					
 				}
 			} else {
 				int categor = tabSymb[identCour].categorie;
@@ -406,18 +417,34 @@ public class PtGen {
 			if (id == 0) {
 				placeIdent(UtilLex.numIdCourant, CONSTANTE, tCour, vCour);
 			}
-
 			break;
 
 		case 11:
 			int idV = presentIdent(1);
 
 			if (idV == 0) {
+				if(bc>1) {
+				placeIdent(UtilLex.numIdCourant, VARLOCALE, tCour, cptlc+2);cptlc++;	
+				}
+				else {
 				placeIdent(UtilLex.numIdCourant, VARGLOBALE, tCour, cpt);
 				cpt++;
+				}
 			}
 			break;
 
+		case 100:
+			int i = presentIdent(1);
+
+			if (i == 0) {
+				if(bc>1) {
+				placeIdent(UtilLex.numIdCourant, VARLOCALE, tCour, cptlc);cptlc++;	
+				}else {
+				placeIdent(UtilLex.numIdCourant, VARGLOBALE, tCour, cpt);
+				cpt++;
+				}
+			}
+			break;
 		case 12:
 			tCour = ENT;
 			break;
@@ -660,6 +687,10 @@ public class PtGen {
 			pileRep.empiler(po.getIpo());
 			break;
 	
+		case 63 :
+			po.modifier(pileRep.depiler(), po.getIpo()+1 );
+			break;
+			
 		case 64:
 			int t = pileRep.depiler();
 			int l = po.getElt(t);
@@ -671,9 +702,49 @@ public class PtGen {
 			po.modifier(t, po.getIpo()+1 );
 			t=l;
 			l = po.getElt(t);
-			
 			}
 			break;
+			
+		case 70:
+			placeIdent(UtilLex.numIdCourant, PROC, NEUTRE, po.getIpo()+1);
+			placeIdent(-1, PRIVEE, NEUTRE, 0);
+			bc=it+1;
+			break;
+			
+		case 71 :
+			po.produire(BINCOND);
+			po.produire(0);
+			pileRep.empiler(po.getIpo()+1);
+			break;
+			
+		case 73 : 
+			
+			if(presentIdent(bc)==0) {
+				placeIdent(UtilLex.numIdCourant, PARAMFIXE, tCour,cptlc);
+				cptlc++;
+			}else {
+				UtilLex.messErr("Param déjà déclaré");
+			}
+			
+			break;
+		case 74:
+			if(presentIdent(bc)==0) {
+				placeIdent(UtilLex.numIdCourant, PARAMMOD, tCour,cptlc);
+				cptlc++;
+			}else {
+				UtilLex.messErr("Param déjà déclaré");
+			}
+			
+			break;
+			
+			
+		case 75:
+			tabSymb[bc-1].info=cptlc;
+			break;
+		case 76 :
+			po.modifier(pileRep.depiler(), po.getIpo()+1);
+			break;
+			
 		case 254:
 			po.produire(ARRET);
 			po.constObj();

@@ -68,17 +68,17 @@ consts  : 'const' ( ident  '=' valeur  {PtGen.pt(10);} ptvg   )+
   ;
   
 // VARLOCAL etc à compléter
-vars  : 'var' ( type ident  {PtGen.pt(11);} ( ','  ident {PtGen.pt(11);} )* ptvg  )+ {PtGen.pt(25);}
+vars  : 'var' ( type ident  {PtGen.pt(11);} ( ','  ident {PtGen.pt(100);} )* ptvg  )+ {PtGen.pt(25);}
   ;
   
 type  : 'ent'  {PtGen.pt(12);}
   |     'bool' {PtGen.pt(13);}
   ;
   
-decprocs: (decproc ptvg)+
+decprocs:{ PtGen.pt(71); } (decproc ptvg)+ {PtGen.pt(76);}
   ;
   
-decproc :  'proc'  ident  parfixe? parmod? consts? vars? corps 
+decproc :  'proc'   ident { PtGen.pt(70); }  parfixe? parmod? { PtGen.pt(75); } consts? vars? corps 
   ;
   
 ptvg  : ';'
@@ -91,13 +91,13 @@ corps : 'debut' instructions 'fin' { PtGen.pt(255); }
 parfixe: 'fixe' '(' pf ( ';' pf)* ')'
   ;
   
-pf  : type ident  ( ',' ident  )*  
+pf  : type ident  { PtGen.pt(73); } ( ',' ident  { PtGen.pt(73); } )*  
   ;
 
 parmod  : 'mod' '(' pm ( ';' pm)* ')'
   ;
   
-pm  : type ident  ( ',' ident  )*
+pm  : type ident { PtGen.pt(74); } ( ',' ident  { PtGen.pt(74); } )*
   ;
   
 instructions
@@ -117,9 +117,9 @@ instruction
 inssi : 'si' expression { PtGen.pt(30); } 'alors' instructions  ( 'sinon' {PtGen.pt(31); } instructions )?  'fsi'{ PtGen.pt(32); }
   ;
   
-inscond : 'cond' { PtGen.pt(60); }  expression { PtGen.pt(61); }  ':' instructions { PtGen.pt(62); }
-          (','  expression { PtGen.pt(61); } ':' instructions { PtGen.pt(62); })* 
-          ('aut'  instructions  |  ) 
+inscond : 'cond' { PtGen.pt(60); }  expression { PtGen.pt(61); }  ':' instructions 
+          (',' { PtGen.pt(62); } expression { PtGen.pt(61); } ':' instructions )  * 
+          ('aut' { PtGen.pt(62); } instructions  | { PtGen.pt(63); }  ) 
           'fcond' { PtGen.pt(64); }
   ;
   
