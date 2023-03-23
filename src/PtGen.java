@@ -205,7 +205,7 @@ public class PtGen {
 		identCour = -1;
 		identaff = -1 ;
 		addIdCour = -1;
-		idOuV = -1;
+		idOuV = -1; 
 		// pile des reprises pour compilation des branchements en avant
 		pileRep = new TPileRep();
 		// programme objet = code Mapile de l'unite en cours de compilation
