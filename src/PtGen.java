@@ -132,7 +132,6 @@ public class PtGen {
 	// compteur pour les variables
 	private static int cpt, identCour,identaff, addIdCour , cptlc;
 	private static int idOuV; // 0 si id 1 si Val
-	private static boolean inProc,effmod;
 
 	private static int cptpar;// pour les appels de proc
 	/**
@@ -206,7 +205,7 @@ public class PtGen {
 		identCour = -1;
 		identaff = -1 ;
 		addIdCour = -1;
-		idOuV = -1;inProc=false;effmod=false;
+		idOuV = -1;
 		// pile des reprises pour compilation des branchements en avant
 		pileRep = new TPileRep();
 		// programme objet = code Mapile de l'unite en cours de compilation
