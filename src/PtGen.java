@@ -132,7 +132,9 @@ public class PtGen {
 	// compteur pour les variables
 	private static int cpt, identCour,identaff, addIdCour , cptlc;
 	private static int idOuV; // 0 si id 1 si Val
-	private static boolean inProc;
+	private static boolean inProc,effmod;
+
+	private static int cptpar;// pour les appels de proc
 	/**
 	 * utilitaire de recherche de l'ident courant (ayant pour code
 	 * UtilLex.numIdCourant) dans tabSymb
@@ -200,11 +202,11 @@ public class PtGen {
 		it = 0;
 		bc = 1;
 
-		cpt = 0; cptlc=0;
+		cpt = 0; cptlc=0; cptpar=0;
 		identCour = -1;
 		identaff = -1 ;
 		addIdCour = -1;
-		idOuV = -1;inProc=false;
+		idOuV = -1;inProc=false;effmod=false;
 		// pile des reprises pour compilation des branchements en avant
 		pileRep = new TPileRep();
 		// programme objet = code Mapile de l'unite en cours de compilation
@@ -601,8 +603,10 @@ public class PtGen {
 						po.produire(0);
 						addIdCour = -1;
 						break;
-						default:
-							UtilLex.messErr("erreur dans l'@ de ident ");
+					case VARGLOBALE:
+						po.produire(AFFECTERG);
+						po.produire(addIdCour);
+						addIdCour = -1;
 					}
 
 				}else {
@@ -845,6 +849,71 @@ public class PtGen {
 			break;
 		case 76 :
 			po.modifier(pileRep.depiler(), po.getIpo()+1);
+			break;
+		case 77:
+			int nb = tabSymb[bc-1].info;
+			it=bc+nb;
+			cptlc=0;
+			for (int i = 0; i < nb; i++) {
+				tabSymb[bc+i].code=-1;
+			}
+			po.produire(RETOUR);
+			po.produire(nb);
+			break;
+			
+		case 78:
+			cptpar++;
+			break;
+			
+			
+		case 80:
+			cptpar++;
+			int idfd = presentIdent(1);
+			if(idfd==0) {
+				UtilLex.messErr("variable n'éxiste pas ");
+			}else {
+				switch (tabSymb[idfd].categorie) {
+				case CONSTANTE,PARAMFIXE:
+					UtilLex.messErr("PASSAGE de mauvais type en param mod ");
+					break;
+				case VARGLOBALE:
+					tabSymb[identaff+cptpar].code=UtilLex.numIdCourant;
+					po.produire(EMPILERADG);
+					po.produire(tabSymb[idfd].info);
+					break;
+				case VARLOCALE:
+					tabSymb[identaff+cptpar].code=UtilLex.numIdCourant;
+					po.produire(EMPILERADL);
+					po.produire(tabSymb[idfd].info);
+					po.produire(0);
+					break;
+				case PARAMMOD:
+					tabSymb[identaff+cptpar].code=UtilLex.numIdCourant;
+					po.produire(EMPILERADL);
+					po.produire(tabSymb[idfd].info);
+					po.produire(1);
+					break;
+				default:
+					UtilLex.messErr("PASSAGE de mauvais type en param mod ");
+					break;
+				}
+			}
+			break;
+		case 81:
+			if(cptpar!=tabSymb[identaff+1].info) {
+				UtilLex.messErr("Nombre de paramètre différent " + cptpar + " - " + tabSymb[identaff].info );
+			}
+			po.produire(APPEL);
+			po.produire(tabSymb[identaff].info);
+			po.produire(cptpar);
+			
+			cptpar=0;
+			break;
+		case 82:
+			identaff=presentIdent(1);
+			if(identaff==0) {
+				UtilLex.messErr("Procédure n'éxiste pas ");
+			}
 			break;
 
 		case 254:

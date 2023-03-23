@@ -1,7 +1,7 @@
 FICHIER TestsProjet/polyP12-exo-deuxprocs.gen : 
 
    1  reserver        1
-   3  bincond       109
+   3  bincond       115
    5  reserver        2
    7  empiler         3
    9  affecterl       4   0
@@ -22,37 +22,41 @@ FICHIER TestsProjet/polyP12-exo-deuxprocs.gen :
   44  sous      
   45  affecterl       4   0
   48  bincond        17
-  50  reserver        3
-  52  contenul        2   0
-  55  affecterl       7   0
-  58  empiler         0
-  60  affecterl       8   0
-  63  contenul        7   0
-  66  empiler         0
-  68  sup       
-  69  bsifaux       103
-  71  contenul        6   0
-  74  contenul        6   0
-  77  contenul        3   0
-  80  supeg     
-  81  bsifaux        92
-  83  contenul        8   0
-  86  empiler         1
-  88  add       
-  89  affecterl       8   0
-  92  contenul        7   0
-  95  empiler         1
-  97  sous      
-  98  affecterl       7   0
- 101  bincond        63
- 103  contenul        8   0
- 106  affecterl       3   0
- 109  lirent    
- 110  affecterl       3   0
- 113  contenul        3   0
- 116  empiler         1
- 118  add       
- 119  contenul        0   1
- 122  contenul        3   0
- 125  ecrent    
- 126  arret     
+  50  retour          1
+  52  reserver        3
+  54  contenul        0   0
+  57  affecterl       5   0
+  60  empiler         0
+  62  affecterl       6   0
+  65  contenul        5   0
+  68  empiler         0
+  70  sup       
+  71  bsifaux       108
+  73  empileradl      4   0
+  76  appel           5   1
+  79  contenul        4   0
+  82  contenul        1   0
+  85  supeg     
+  86  bsifaux        97
+  88  contenul        6   0
+  91  empiler         1
+  93  add       
+  94  affecterl       6   0
+  97  contenul        5   0
+ 100  empiler         1
+ 102  sous      
+ 103  affecterl       5   0
+ 106  bincond        65
+ 108  contenul        6   0
+ 111  affecterg       0
+ 113  retour          2
+ 115  lirent    
+ 116  affecterg       0
+ 118  contenug        0
+ 120  empiler         1
+ 122  add       
+ 123  empiler        10
+ 125  appel          52   2
+ 128  contenug        0
+ 130  ecrent    
+ 131  arret     
