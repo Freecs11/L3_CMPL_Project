@@ -3,7 +3,7 @@ programme deuxprocs:	{exemple d'execution dans poly}
 	const n=10; var ent x;
 
 	proc p1 mod (ent n)
-		const m=3; var ent x, i;
+		const m=3; var ent x, i ;
 	debut
 		i:=m; n:=0;
 		ttq i>0 faire lire(x); n:=n+x; i:=i-1 fait

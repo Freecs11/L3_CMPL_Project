@@ -130,7 +130,7 @@ public class PtGen {
 	private static int it, bc;
 
 	// compteur pour les variables
-	private static int cpt, identCour,identaff, addIdCour , cptlc;
+	private static int cpt, identCour,identaff, addIdCour , cptlc,cptref;
 	private static int idOuV; // 0 si id 1 si Val
 
 	private static int cptpar;// pour les appels de proc
@@ -434,14 +434,23 @@ public class PtGen {
 
 		case 10:
 			int id = presentIdent(1);
-			if (id == 0) {
-				placeIdent(UtilLex.numIdCourant, CONSTANTE, tCour, vCour);
+			if(bc>1) {
+				if(presentIdent(bc)==0) {
+					placeIdent(UtilLex.numIdCourant, CONSTANTE, tCour, vCour);	
+				}else {
+					UtilLex.messErr("constante existante , Local");
+				}
+			}
+			else {
+				if (id == 0) {
+					placeIdent(UtilLex.numIdCourant, CONSTANTE, tCour, vCour);
+				}
 			}
 			break;
 
 		case 11:
 			if(bc>1) {
-				cptlc=0;
+				
 				if(presentIdent(bc)==0) {
 					placeIdent(UtilLex.numIdCourant, VARLOCALE, tCour, tabSymb[bc-1].info+2);cptlc++;	
 				}else {
@@ -459,7 +468,9 @@ public class PtGen {
 				}
 			}
 			break;
-
+		case 101:
+			cptlc=0;
+			break;
 		case 100:
 			if(bc>1) {
 				if(presentIdent(bc)==0) {
@@ -564,6 +575,7 @@ public class PtGen {
 					po.produire(CONTENUL);
 					po.produire(tabSymb[idId].info);
 					po.produire(1);
+					break;
 
 					// les autres catégories restent à traité .
 
@@ -582,6 +594,7 @@ public class PtGen {
 			}else {
 				po.produire(RESERVER);
 				po.produire(cpt);
+				desc.setTailleGlobaux(cpt);
 			}
 			break;
 
@@ -845,6 +858,15 @@ public class PtGen {
 
 		case 75:
 			tabSymb[bc-1].info=cptlc;
+			if(desc.getUnite()=="module") {
+			int adProc = desc.presentDef(UtilLex.chaineIdent(tabSymb[bc-2].code));
+			if(adProc!= 0) {
+				desc.modifDefAdPo(adProc,tabSymb[bc-2].info);
+				desc.modifDefNbParam(adProc, cptlc);
+			}else {
+				UtilLex.messErr("Proc non déclarer");
+			}
+			}
 			break;
 		case 76 :
 			po.modifier(pileRep.depiler(), po.getIpo()+1);
@@ -853,7 +875,7 @@ public class PtGen {
 			int nb = tabSymb[bc-1].info;
 			it=bc+nb;
 			cptlc=0;
-			for (int i = 0; i < nb; i++) {
+			for (int i = 0; i < nb+1; i++) {
 				tabSymb[bc+i].code=-1;
 			}
 			po.produire(RETOUR);
@@ -875,19 +897,16 @@ public class PtGen {
 				case CONSTANTE,PARAMFIXE:
 					UtilLex.messErr("PASSAGE de mauvais type en param mod ");
 					break;
-				case VARGLOBALE:
-					tabSymb[identaff+cptpar].code=UtilLex.numIdCourant;
+				case VARGLOBALE:	
 					po.produire(EMPILERADG);
 					po.produire(tabSymb[idfd].info);
 					break;
 				case VARLOCALE:
-					tabSymb[identaff+cptpar].code=UtilLex.numIdCourant;
 					po.produire(EMPILERADL);
 					po.produire(tabSymb[idfd].info);
 					po.produire(0);
 					break;
 				case PARAMMOD:
-					tabSymb[identaff+cptpar].code=UtilLex.numIdCourant;
 					po.produire(EMPILERADL);
 					po.produire(tabSymb[idfd].info);
 					po.produire(1);
@@ -914,9 +933,31 @@ public class PtGen {
 				UtilLex.messErr("Procédure n'éxiste pas ");
 			}
 			break;
-
+		case 110:
+			desc.setUnite("programme");
+			break;
+		case 111:
+			desc.setUnite("module");
+			break;
+			
+		case 115 : 
+			desc.ajoutDef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+			break;
+		case 116 : 
+			desc.ajoutRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+			cptref=1;
+			break;
+		case 117 : 
+			cptref++;
+			break;
+		case 118 : 
+			int adRef = desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+			desc.modifRefNbParam(adRef, cptref);
+			break;
 		case 254:
 			po.produire(ARRET);
+			desc.setTailleCode(po.getIpo());
+			
 			po.constObj();
 			po.constGen();
 			break;
