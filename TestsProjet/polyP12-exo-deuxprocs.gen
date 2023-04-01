@@ -2,7 +2,7 @@ FICHIER TestsProjet/polyP12-exo-deuxprocs.gen :
 
    1  reserver        1
    3  bincond       115
-   5  reserver        3
+   5  reserver        2
    7  empiler         3
    9  affecterl       4   0
   12  empiler         0
@@ -23,7 +23,7 @@ FICHIER TestsProjet/polyP12-exo-deuxprocs.gen :
   45  affecterl       4   0
   48  bincond        17
   50  retour          1
-  52  reserver        5
+  52  reserver        3
   54  contenul        0   0
   57  affecterl       5   0
   60  empiler         0

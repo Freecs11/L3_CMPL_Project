@@ -662,7 +662,7 @@ public class PtGen {
 			break;
 
 		case 28:
-			if (idOuV == 0) {
+			if (idOuV == -1) {
 				if (tCour == ENT) {
 					po.produire(ECRENT);
 				} else if (tCour == BOOL) {
@@ -873,11 +873,21 @@ public class PtGen {
 			break;
 		case 77:
 			int nb = tabSymb[bc-1].info;
-			it=bc+nb;
-			cptlc=0;
-			for (int i = 0; i < nb+1; i++) {
+			if(nb==0 && cptlc==0) {
+				it=bc-1;
+				bc = 0;
+			}else {
+			System.out.println("bc = "+bc + " and nb = "+nb );
+			
+			it=bc-1+nb;
+			
+				for (int i =0; i < nb; i++) {
 				tabSymb[bc+i].code=-1;
+				}
+			
 			}
+			bc =0;
+			cptlc=0;
 			po.produire(RETOUR);
 			po.produire(nb);
 			break;
@@ -957,7 +967,7 @@ public class PtGen {
 		case 254:
 			po.produire(ARRET);
 			desc.setTailleCode(po.getIpo());
-			
+			desc.ecrireDesc(System.class.getName());
 			po.constObj();
 			po.constGen();
 			break;
