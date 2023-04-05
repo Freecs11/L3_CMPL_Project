@@ -6,7 +6,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Freecs/Desktop/compilateurProjet/2023-libClass_Projet"/>
-	<classpathentry kind="lib" path="C:/Users/Freecs/Downloads/antlr-3.5.2-complete.jar"/>
+	<classpathentry kind="lib" path="H:/windows/bureau/antlr-3.5.2-complete.jar"/>
+	<classpathentry kind="lib" path="H:/windows/bureau/compilateurProjet/compilateurProjet/2023-libClass_Projet"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

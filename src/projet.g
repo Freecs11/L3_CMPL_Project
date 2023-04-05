@@ -35,7 +35,7 @@ catch (RecognitionException e) {reportError (e) ; throw e ; }}
 
 
 unite  :   unitprog  EOF {PtGen.pt(254);}
-      |    unitmodule  EOF {PtGen.pt(254);}
+      |    unitmodule  EOF {PtGen.pt(254);} 
   ;
   
 unitprog
@@ -60,8 +60,8 @@ partiedef
 partieref: 'ref'  specif  (',' specif  )* ptvg
   ;
   
-specif  : ident  ( 'fixe'  '(' type {PtGen.pt(116);} ( ',' type {PtGen.pt(117);} )* ')' {PtGen.pt(118);} )? 
-                 ( 'mod'  '(' type {PtGen.pt(116);} ( ',' type {PtGen.pt(117);} )*  ')'{PtGen.pt(117);} )? 
+specif  : ident {PtGen.pt(116);} ( 'fixe'  '(' type {PtGen.pt(117);} ( ',' type {PtGen.pt(117);} )* {PtGen.pt(119);} ')'  )? 
+                 ( 'mod'  '(' type  ( ',' type {PtGen.pt(117);} )*  ')'{PtGen.pt(119);} )? {PtGen.pt(118);}
   ;
   
 consts  : 'const' ( ident  '=' valeur  {PtGen.pt(10);} ptvg   )+ 
