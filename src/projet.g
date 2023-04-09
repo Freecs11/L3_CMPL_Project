@@ -60,8 +60,8 @@ partiedef
 partieref: 'ref'  specif  (',' specif  )* ptvg
   ;
   
-specif  : ident {PtGen.pt(116);} ( 'fixe'  '(' type {PtGen.pt(117);} ( ',' type {PtGen.pt(117);} )* {PtGen.pt(119);} ')'  )? 
-                 ( 'mod'  '(' type  ( ',' type {PtGen.pt(117);} )*  ')'{PtGen.pt(119);} )? {PtGen.pt(118);}
+specif  : ident {PtGen.pt(116);} ( 'fixe'  '(' type {PtGen.pt(117);} ( ',' type {PtGen.pt(117);} )*  ')'  )?
+                 ( 'mod'  '(' type {PtGen.pt(117);} ( ',' type {PtGen.pt(117);} )*  ')' )? {PtGen.pt(118);}
   ;
   
 consts  : 'const' ( ident  '=' valeur  {PtGen.pt(10);} ptvg   )+ 
@@ -78,7 +78,7 @@ type  : 'ent'  {PtGen.pt(12);}
 decprocs:{ PtGen.pt(71); } (decproc ptvg)+ {PtGen.pt(76);}
   ;
   
-decproc :  'proc'   ident { PtGen.pt(70); }  parfixe? parmod? { PtGen.pt(75); } consts? {PtGen.pt(101);} vars? { PtGen.pt(255); } corps {PtGen.pt(77);}{ PtGen.pt(255); }
+decproc :  'proc'   ident { PtGen.pt(70); }  parfixe? parmod? { PtGen.pt(75); } consts? {PtGen.pt(101);} vars?  corps {PtGen.pt(77);} { PtGen.pt(255); }
   ;
   
 ptvg  : ';'

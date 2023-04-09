@@ -130,7 +130,7 @@ public class PtGen {
 	private static int it, bc;
 
 	// compteur pour les variables
-	private static int cpt, identCour,identaff, addIdCour , cptlc,cptref;
+	private static int cpt, identCour,identaff, addIdCour , cptlc,cptref,descs;
 	private static int idOuV; // 0 si id 1 si Val
 
 	private static int cptpar;// pour les appels de proc
@@ -981,19 +981,21 @@ public class PtGen {
 			}
 			break;
 		case 81:
-			if(cptpar!=tabSymb[identaff+1].info) {
-				UtilLex.messErr("Nombre de paramètre différent " + cptpar + " - " + tabSymb[identaff].info );
-			}
 			po.produire(APPEL);
-			int descP = desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
-			if(descP!=0) {
-				po.produire(descP);
-				po.produire(cptref);
+			if(descs==0) {
+				if(cptpar!=tabSymb[identaff+1].info) {
+					UtilLex.messErr("Nombre de paramètre différent " + cptpar + " - " + tabSymb[identaff].info );
+				}
+				po.produire(tabSymb[identaff].info);
+				po.produire(cptpar);
 			}else {
-			po.produire(tabSymb[identaff].info);
-			po.produire(cptpar);
-			}
-			if(desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant)) !=-1) {
+				System.out.println(desc.toString()+"\n and cptpar is : "+cptpar);
+				
+				if(cptpar!=desc.getRefNbParam(descs)) {
+					UtilLex.messErr("Nombre de paramètre différent de ce que la référence accepte");
+				}
+				po.produire(descs);
+				po.produire(cptref);
 				modifVecteurTrans(REFEXT);
 			}
 			
@@ -1002,9 +1004,8 @@ public class PtGen {
 			break;
 		case 82:
 			afftabSymb();
-			desc.ecrireDesc(UtilLex.nomSource);
 			
-			int descs = desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+			descs = desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
 			if(descs!=0) {
 			identaff=descs;
 			}else {
@@ -1031,29 +1032,25 @@ public class PtGen {
 
 		case 117 : 
 			cptref++;
+			System.out.println(cptref);
 			break;
 		case 118 : 
 			int adRef = desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+			System.out.println(cptref);
 			desc.modifRefNbParam(adRef, cptref);
-			
 			break;
-		case 119:
-			cptref=0;
-			break;
-		
-		case 254:
-			
-			desc.setTailleCode(po.getIpo());
+
+		case 254:	
 			if(desc.getUnite()!="module") {
 				po.produire(ARRET);
-			}else {
-				desc.ecrireDesc(UtilLex.nomSource);
-				
 			}
-		
-			
+			desc.setTailleCode(po.getIpo());
+			desc.ecrireDesc(UtilLex.nomSource);
+			System.out.println(po.getIpo());
 			po.constObj();
 			po.constGen();
+			
+			System.out.println(desc.getTailleCode());
 			break;
 		case 255:
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
