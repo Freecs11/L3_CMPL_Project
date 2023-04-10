@@ -1,4 +1,9 @@
-import java.io.*;
+
+import java.io.OutputStream;
+
+
+
+
  //TODO : Renseigner le champs auteur : Nom1_Prenom1_Nom2_Prenom2_Nom3_Prenom3
  /**
  * 
@@ -7,8 +12,20 @@ import java.io.*;
  *
  */
 
-
 public class Edl {
+	public class EltDef {
+		// nomProc = nom de la procedure definie en DEF
+		public String nomProc;
+		// adPo = adresse de debut de code de cette procedure
+		// nbParam =  nombre de parametres de cette procedure
+		public int adPo, nbParam;
+
+		public EltDef(String nomProc, int adPo, int nbParam) {
+			this.nomProc = nomProc;
+			this.adPo = adPo;
+			this.nbParam = nbParam;
+		}
+	}
 
 	// nombre max de modules, taille max d'un code objet d'une unite
 	static final int MAXMOD = 5, MAXOBJ = 1000;
@@ -28,14 +45,20 @@ public class Edl {
 	//TODO : declarations de variables A COMPLETER SI BESOIN
 	static int ipo, nMod, nbErr;
 	static String nomProg;
-
+	static int[] transDon = new int[nMod];
+	static int[] transCode = new int[nMod];
+	
+	// problem d'import d'EltDef de Descripteur à régler ..
+	static  EltDef[] dicoDef = new EltDef[MAXDEF + 1];
+	
 
 	// utilitaire de traitement des erreurs
 	// ------------------------------------
 	static void erreur(int te, String m) {
 		System.out.println(m);
 		if (te == FATALE) {
-			System.out.println("ABANDON DE L'EDITION DE LIENS");
+			System.out.println("ABANDON DE L'ED"
+					+ "ITION DE LIENS");
 			System.exit(1);
 		}
 		nbErr = nbErr + 1;
@@ -80,6 +103,12 @@ public class Edl {
 		// pour construire le code concatene de toutes les unités
 		int[] po = new int[(nMod + 1) * MAXOBJ + 1];
 		
+		for (int i = 0; i < tabDesc.length; i++) {
+			
+			
+		}
+		
+		
 		//TODO : ... A COMPLETER ...
 		// 
 		//
@@ -101,9 +130,27 @@ public class Edl {
 		lireDescripteurs();		//TODO : lecture des descripteurs a completer si besoin
 
 		//TODO : ... A COMPLETER ...
-		// 
-		// 
-		//
+		int j = 1;
+		int x =0;
+		transCode[0]=0;
+		for (int i = 1; i < tabDesc.length; i++) {
+			if(tabDesc[i]!=null) {
+				transCode[j]= transCode[j-1] + tabDesc[i].getTailleCode();
+				// transDon TODO
+				
+				//dicoDef
+				for (int k = 0; k < tabDesc[i].getNbDef(); k++) {
+					dicoDef[x]=tabDesc[i].tabDef[k];
+					dicoDef[x].modifDefAdPo(k, tabDesc[i].getDefAdPo(i)+transCode[j]);
+					
+					x++;
+					
+				}
+				
+				j++;
+			}
+		}
+		
 
 		if (nbErr > 0) {
 			System.out.println("programme executable non produit");

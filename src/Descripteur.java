@@ -63,9 +63,9 @@ public class Descripteur {
 
 	private static final int MAXREF = 10, MAXDEF = 10;
 	// tabDef = table des procedures definies en DEF dans l'unite compilee
-	private EltDef[] tabDef = new EltDef[MAXDEF + 1];
+	public EltDef[] tabDef = new EltDef[MAXDEF + 1];
 	// tabRef = table des procedures definies en REF dans l'unite compilee
-	private EltRef[] tabRef = new EltRef[MAXREF + 1];
+	public EltRef[] tabRef = new EltRef[MAXREF + 1];
 
 	// constructeur
 	public Descripteur() {

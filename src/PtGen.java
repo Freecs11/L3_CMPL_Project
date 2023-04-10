@@ -995,8 +995,9 @@ public class PtGen {
 					UtilLex.messErr("Nombre de paramètre différent de ce que la référence accepte");
 				}
 				po.produire(descs);
-				po.produire(cptref);
 				modifVecteurTrans(REFEXT);
+				po.produire(cptref);
+				
 			}
 			
 			
@@ -1038,6 +1039,8 @@ public class PtGen {
 			int adRef = desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
 			System.out.println(cptref);
 			desc.modifRefNbParam(adRef, cptref);
+			placeIdent(UtilLex.numIdCourant, PROC, NEUTRE, adRef);
+			placeIdent(-1, PRIVEE, NEUTRE, cptref);
 			break;
 
 		case 254:	
