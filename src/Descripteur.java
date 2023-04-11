@@ -18,7 +18,7 @@ public class Descripteur {
 	 * 	 le type de chaque element de la table des points d'entree tabDef
 	 */
 	
-	class EltDef {
+	public class EltDef {
 		// nomProc = nom de la procedure definie en DEF
 		public String nomProc;
 		// adPo = adresse de debut de code de cette procedure
@@ -36,7 +36,7 @@ public class Descripteur {
 	 * 	 le type de chaque element de la table des references externes tabRef
 	 */
 	
-	class EltRef {
+	public class EltRef {
 		// nomProc = nom de la procedure definie en REF
 		public String nomProc;
 		//  nbParam =  nombre de parametres de cette procedure
