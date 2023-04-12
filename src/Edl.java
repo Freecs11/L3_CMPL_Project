@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Iterator;
 
 
  //TODO : Renseigner le champs auteur : Nom1_Prenom1_Nom2_Prenom2_Nom3_Prenom3
@@ -29,11 +30,13 @@ public class Edl {
 	
 	
 	//TODO : declarations de variables A COMPLETER SI BESOIN
-	static int ipo, nMod, nbErr;
+	static int ipo, nMod, nbErr,varGlobTotal;
 	static String nomProg;
 	static Descripteur.EltDef[] dicoDef = new Descripteur.EltDef[60];
-	static int[] transDon = new int[nMod];
-	static int[] transCode = new int[nMod];
+	static String[] files= new String[MAXMOD+1]; 
+	static int[] transDon ;
+	static int[] transCode;
+	static int[][] adFinale = new int[MAXMOD][MAXDEF];
 	
 	// utilitaire de traitement des erreurs
 	// ------------------------------------
@@ -50,15 +53,19 @@ public class Edl {
 	// --------------------------------------------------------------
 	static void lireDescripteurs() {
 		String s;
+		varGlobTotal=0;
 		System.out.println("les noms doivent etre fournis sans suffixe");
 		System.out.print("nom du programme : ");
 		s = Lecture.lireString();
+		files[0]=s;
 		tabDesc[0] = new Descripteur();
 		tabDesc[0].lireDesc(s);
 		if (!tabDesc[0].getUnite().equals("programme"))
 			erreur(FATALE, "programme attendu");
 		nomProg = s;
-
+		int rem=1;
+		varGlobTotal+=tabDesc[0].getTailleGlobaux();
+		
 		nMod = 0;
 		while (!s.equals("") && nMod < MAXMOD) {
 			System.out.print("nom de module " + (nMod + 1)
@@ -66,13 +73,19 @@ public class Edl {
 			s = Lecture.lireString();
 			if (!s.equals("")) {
 				nMod = nMod + 1;
+				files[rem]=s;
+				rem++;
 				tabDesc[nMod] = new Descripteur();
 				tabDesc[nMod].lireDesc(s);
 
 				if (!tabDesc[nMod].getUnite().equals("module"))
 					erreur(FATALE, "module attendu");
+				varGlobTotal+=tabDesc[nMod].getTailleGlobaux();
 			}
 		}
+		transCode = new int[nMod+1];
+		transDon = new int[nMod+1];
+		
 	}
 
 
@@ -85,14 +98,116 @@ public class Edl {
 		// pour construire le code concatene de toutes les unités
 		int[] po = new int[(nMod + 1) * MAXOBJ + 1];
 		
-		//TODO : ... A COMPLETER ...
-		// 
-		//
+		ipo = 0;
+		
+		// indice 0 -> reserver nb
+		// parcours fichier par fichier
+		for (int i = 0; i < nMod+1; i++) {
+			InputStream file = Lecture.ouvrir(files[i] + ".obj");
+			int [] vTrans = new int[1000];
+			int vRem= 0;
+			// nbTransExt
+			int nbTransExt = tabDesc[i].getNbTransExt();
+			for (int j = 0; j < nbTransExt; j++) {
+				vTrans[vRem]= Lecture.lireInt();
+				vRem++;
+				vTrans[vRem]= Lecture.lireInt();
+				vRem++;
+			}
+			
+			
+			for (int j = nbTransExt+1; j < tabDesc[i].getTailleCode()-1; j++) {
+				po[ipo] = Lecture.lireIntln(file);
+				for (int k = 0; k < vTrans.length; k+=2) {
+					if(po[ipo]==vTrans[k]) {
+						switch (vTrans[k+1]) {
+						case TRANSCODE:
+							po[ipo]=transCode[i];
+							break;
+						case TRANSDON:
+							po[ipo]=transDon[i];
+							break;
+						case REFEXT:
+							po[ipo]=adFinale[i][j];
+							break;
+				
+						default:
+							break;
+						}
+					}
+				}
+				ipo++;
+			}
+			
+		}
+		po[1]=varGlobTotal;
 
 		Ecriture.fermer(f2);
 
 		// creation du fichier en mnemonique correspondant
 		Mnemo.creerFichier(ipo, po, nomProg + ".ima");
+	}
+	
+	static void constTabsCodeDon() {
+		
+		int x=1 ;
+		int k=0;
+		transCode[0]=0;
+		transDon[0]=0;
+		for (int i = 1; i < nMod+1; i++) {
+			// transcode et transdon
+			if(i>0) {
+			transCode[x]=transCode[x-1]+tabDesc[i-1].getTailleCode();
+			transDon[x]=tabDesc[i-1].getTailleGlobaux();
+			}
+			x++;
+		}
+		
+	}
+	static void constAdFinale() {
+		for (int i = 0; i < nMod+1; i++) {
+			// accede à tabRef 
+			System.out.print("indice "+i + " ");
+			for (int j = 0; j < tabDesc[i].getNbRef()+1; j++) {
+				// j -> tabref
+				boolean found =false ;
+				
+				for (int k =0; k < dicoDef.length; k++) {
+					if(dicoDef[k]!=null) {
+//						System.out.println(dicoDef[k].nomProc + "  ----  " + tabDesc[i].getRefNomProc(j));
+//						System.out.println(dicoDef[k].adPo +  "  ----  " + tabDesc[i].getRefNbParam(j));
+						if(dicoDef[k].nomProc.compareTo(tabDesc[i].getRefNomProc(j))==0
+						&&	dicoDef[k].nbParam==tabDesc[i].getRefNbParam(j))
+						{
+							adFinale[i][j]=dicoDef[k].adPo;
+							System.out.print(adFinale[i][j] + " ");
+							found = true;
+						}
+					}
+				}
+				if(!found) {
+					erreur(NONFATALE, " ref non trouvé dans dicoDef" );
+				}
+				found = false;
+			}	
+			System.out.println();
+		}
+	}
+	
+	static void constDicoDef() {
+		int x=0; // x -> indice de remplissage de dicoDef
+		for (int i = 0; i < nMod+1; i++) {
+			// i -> module
+			
+			for (int j = 1; j < tabDesc[i].getNbDef()+1; j++) {
+				dicoDef[x] = tabDesc[i].tabDef[j];
+				dicoDef[x].adPo+= transCode[i]; 
+				System.out.println(dicoDef[x].nomProc + " , "+ dicoDef[x].adPo +" , "+ dicoDef[x].nbParam);
+				x++;
+			}
+			
+		}
+		
 	}
 
 	public static void main(String argv[]) {
@@ -105,27 +220,16 @@ public class Edl {
 		// -----------------------------
 		lireDescripteurs();		//TODO : lecture des descripteurs a completer si besoin
 
-		//TODO : ... A COMPLETER ...
-		// 
-		int x=0 ,k=0;
-		transCode[0]=0;
-		transDon[0]=0;
-		for (int i = 0; i < nMod; i++) {
-			if(i>=1) {
-			transCode[x]=transCode[x-1]+tabDesc[i].getTailleCode();
-			}
-			// transDon TODO
-			
-			// dicoDef
-			for (int j = 0; j < tabDesc[i].getNbDef(); j++) {
-				dicoDef[k]= tabDesc[i].tabDef[k];
-				dicoDef[k].adPo+=transCode[x];
-				k++;
-			}
-				
-			x++;
+		constTabsCodeDon();
+		constDicoDef();
+		constAdFinale();
+		
+		for (int i = 0; i < nMod+1; i++) {
+			System.out.println(files[i]);
 		}
-
+		
+		
+		
 		if (nbErr > 0) {
 			System.out.println("programme executable non produit");
 			System.exit(1);
