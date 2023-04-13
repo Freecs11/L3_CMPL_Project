@@ -22,10 +22,10 @@ FICHIER TestsProjet/polyP41-exemple-ess1.gen :
   36  inf       
   37  bsifaux        46
   39  contenug        0
-  41  appel           3   0
+  41  appel           3   1
   44  bincond        51
   46  contenug        0
-  48  appel           4   0
+  48  appel           4   1
   51  lirent    
   52  affecterg       0
   54  bincond        12

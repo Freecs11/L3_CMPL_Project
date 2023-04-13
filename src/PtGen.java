@@ -948,7 +948,7 @@ public class PtGen {
 			
 			
 		case 80:
-			cptpar++;
+			cptpar++;cptref++;
 			int idfd = presentIdent(1);
 			if(idfd==0) {
 				UtilLex.messErr("variable n'éxiste pas ");
@@ -996,11 +996,9 @@ public class PtGen {
 				}
 				po.produire(descs);
 				modifVecteurTrans(REFEXT);
-				po.produire(cptref);
-				
+				po.produire(desc.getRefNbParam(descs));	
 			}
-			
-			
+			cptref=0;
 			cptpar=0;
 			break;
 		case 82:
@@ -1009,6 +1007,7 @@ public class PtGen {
 			descs = desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
 			if(descs!=0) {
 			identaff=descs;
+//			cptref=0;
 			}else {
 				identaff=presentIdent(1);
 				if(identaff==0) {
