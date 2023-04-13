@@ -948,7 +948,7 @@ public class PtGen {
 			
 			
 		case 80:
-			cptpar++;cptref++;
+			cptpar++;
 			int idfd = presentIdent(1);
 			if(idfd==0) {
 				UtilLex.messErr("variable n'éxiste pas ");
