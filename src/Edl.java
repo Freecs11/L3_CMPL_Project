@@ -6,7 +6,7 @@ import java.util.Set;
 //TODO : Renseigner le champs auteur : Nom1_Prenom1_Nom2_Prenom2_Nom3_Prenom3
 /**
  * 
- * @author XXX, YYY, ZZZ
+ * @author Bouhmad_Rachid,Boquain_Mathis,Fall_Serigne
  * @version 2020
  *
  */
