@@ -18,7 +18,7 @@ public class Descripteur {
 	 * 	 le type de chaque element de la table des points d'entree tabDef
 	 */
 	
-	class EltDef {
+	public class EltDef {
 		// nomProc = nom de la procedure definie en DEF
 		public String nomProc;
 		// adPo = adresse de debut de code de cette procedure
@@ -36,7 +36,7 @@ public class Descripteur {
 	 * 	 le type de chaque element de la table des references externes tabRef
 	 */
 	
-	class EltRef {
+	public class EltRef {
 		// nomProc = nom de la procedure definie en REF
 		public String nomProc;
 		//  nbParam =  nombre de parametres de cette procedure
@@ -63,9 +63,9 @@ public class Descripteur {
 
 	private static final int MAXREF = 10, MAXDEF = 10;
 	// tabDef = table des procedures definies en DEF dans l'unite compilee
-	private EltDef[] tabDef = new EltDef[MAXDEF + 1];
+	public EltDef[] tabDef = new EltDef[MAXDEF + 1];
 	// tabRef = table des procedures definies en REF dans l'unite compilee
-	private EltRef[] tabRef = new EltRef[MAXREF + 1];
+	public EltRef[] tabRef = new EltRef[MAXREF + 1];
 
 	// constructeur
 	public Descripteur() {

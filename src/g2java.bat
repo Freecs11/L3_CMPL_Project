@@ -7,7 +7,7 @@
 
 :: Commande si antlr-3.5.2-complete.jar EST COPIE SOUS VOTRE REPERTOIRE
 ::    -> pensez alors a indiquer le chemin correct
-:: java -cp C:\Users\Freecs\Downloads\antlr-3.5.2-complete.jar org.antlr.Tool %*
+ java -cp C:\Users\Freecs\Downloads\antlr-3.5.2-complete.jar org.antlr.Tool %*
 
 
-java -cp H:\windows\bureau\antlr-3.5.2-complete.jar org.antlr.Tool %*
+::java -cp H:\windows\bureau\antlr-3.5.2-complete.jar org.antlr.Tool %*

@@ -41,24 +41,24 @@ public class PtGen {
 	// taille max de la table des symboles
 	MAXSYMB = 300,
 
-			// codes MAPILE :
-			RESERVER = 1, EMPILER = 2, CONTENUG = 3, AFFECTERG = 4, OU = 5, ET = 6, NON = 7, INF = 8, INFEG = 9,
-			SUP = 10, SUPEG = 11, EG = 12, DIFF = 13, ADD = 14, SOUS = 15, MUL = 16, DIV = 17, BSIFAUX = 18,
-			BINCOND = 19, LIRENT = 20, LIREBOOL = 21, ECRENT = 22, ECRBOOL = 23, ARRET = 24, EMPILERADG = 25,
-			EMPILERADL = 26, CONTENUL = 27, AFFECTERL = 28, APPEL = 29, RETOUR = 30,
+	// codes MAPILE :
+	RESERVER = 1, EMPILER = 2, CONTENUG = 3, AFFECTERG = 4, OU = 5, ET = 6, NON = 7, INF = 8, INFEG = 9,
+	SUP = 10, SUPEG = 11, EG = 12, DIFF = 13, ADD = 14, SOUS = 15, MUL = 16, DIV = 17, BSIFAUX = 18,
+	BINCOND = 19, LIRENT = 20, LIREBOOL = 21, ECRENT = 22, ECRBOOL = 23, ARRET = 24, EMPILERADG = 25,
+	EMPILERADL = 26, CONTENUL = 27, AFFECTERL = 28, APPEL = 29, RETOUR = 30,
 
-			// codes des valeurs vrai/faux
-			VRAI = 1, FAUX = 0,
+	// codes des valeurs vrai/faux
+	VRAI = 1, FAUX = 0,
 
-			// types permis :
-			ENT = 1, BOOL = 2, NEUTRE = 3,
+	// types permis :
+	ENT = 1, BOOL = 2, NEUTRE = 3,
 
-			// categories possibles des identificateurs :
-			CONSTANTE = 1, VARGLOBALE = 2, VARLOCALE = 3, PARAMFIXE = 4, PARAMMOD = 5, PROC = 6, DEF = 7, REF = 8,
-			PRIVEE = 9,
+	// categories possibles des identificateurs :
+	CONSTANTE = 1, VARGLOBALE = 2, VARLOCALE = 3, PARAMFIXE = 4, PARAMMOD = 5, PROC = 6, DEF = 7, REF = 8,
+	PRIVEE = 9,
 
-			// valeurs possible du vecteur de translation
-			TRANSDON = 1, TRANSCODE = 2, REFEXT = 3;
+	// valeurs possible du vecteur de translation
+	TRANSDON = 1, TRANSCODE = 2, REFEXT = 3;
 
 	// utilitaires de controle de type
 	// -------------------------------
@@ -130,10 +130,10 @@ public class PtGen {
 	private static int it, bc;
 
 	// compteur pour les variables
-	private static int cpt, identCour, addIdCour;
+	private static int cpt, identCour,identaff, addIdCour , cptlc,cptref,descs;
 	private static int idOuV; // 0 si id 1 si Val
-	private static boolean fromClosed;
 
+	private static int cptpar;// pour les appels de proc
 	/**
 	 * utilitaire de recherche de l'ident courant (ayant pour code
 	 * UtilLex.numIdCourant) dans tabSymb
@@ -201,13 +201,11 @@ public class PtGen {
 		it = 0;
 		bc = 1;
 
-		cpt = 0;
+		cpt = 0; cptlc=0; cptpar=0;
 		identCour = -1;
+		identaff = -1 ;
 		addIdCour = -1;
-		idOuV = -1;
-		fromClosed = false;
-		
-
+		idOuV = -1; 
 		// pile des reprises pour compilation des branchements en avant
 		pileRep = new TPileRep();
 		// programme objet = code Mapile de l'unite en cours de compilation
@@ -239,70 +237,84 @@ public class PtGen {
 		case 1:
 			tCour = ENT;
 			vCour = UtilLex.valEnt;
-			
+
 
 			break;
 		case 2:
 			tCour = BOOL;
 			vCour = VRAI;
-			
+
 			break;
 		case 3:
 			tCour = ENT;
 			vCour = UtilLex.valEnt;
-			
+
 
 			break;
 
 		case 4:
 			tCour = ENT;
 			vCour = -UtilLex.valEnt;
-		
+
 			break;
 
 		case 5:
-			// identCour = presentIdent(1);
-			// System.out.println("identCourant à : "+ identCour );
-			//if (!fromClosed) {
-				if(idOuV==0 && idOuV != -1) {
-					po.produire(EMPILER);
-					po.produire(vCour);
-				}
-				else if (identCour != -1) {
-					int categor = tabSymb[identCour].categorie;
-					switch (categor) {
-					case CONSTANTE:
-						po.produire(EMPILER);
-						po.produire(tabSymb[identCour].info);
-						break;
-					case VARGLOBALE:
-						po.produire(CONTENUG);
-						po.produire(tabSymb[identCour].info);
-						if (po.getIpo() > 5 && po.getIpo() < 18) {
-							System.out.println("produced : CONTENUG " + tabSymb[identCour].info);
-						}
-						break;
-					}
-					
-				//}
+			identCour = presentIdent(1);
+
+			if(idOuV==0 && idOuV != -1) {
+				po.produire(EMPILER);
+				po.produire(vCour);
+				tCour=ENT;
+				idOuV=-1;
 			}
-			fromClosed = false;
+			else if (identCour != -1) {
+				int categor = tabSymb[identCour].categorie;
+				switch (categor) {
+				case CONSTANTE:
+					po.produire(EMPILER);
+					po.produire(tabSymb[identCour].info);
+					break;
+				case VARGLOBALE:
+					po.produire(CONTENUG);
+					po.produire(tabSymb[identCour].info);
+					if("module".equals(desc.getUnite())) {
+						modifVecteurTrans(TRANSDON);
+					}
+					break;
+
+				case VARLOCALE,PARAMFIXE:
+					po.produire(CONTENUL);
+				po.produire(tabSymb[identCour].info);
+				po.produire(0);
+				break;
+				case PARAMMOD:
+					po.produire(CONTENUL);
+					po.produire(tabSymb[identCour].info);
+					po.produire(1);
+					break;
+				default:
+
+					break;
+
+
+				}
+			}
 			identCour = -1;
-			
+
 			break;
 
 		case 50 :
 			// pour les verifications des entiers
-				verifEnt();
-			
-			
+			verifEnt();
+
+
 			break;
-			
+
 		case 51:
 			// pour les verifications des bool
 			verifBool();
 
-			
+
 			break;
 		case 40:
 			identCour = presentIdent(1);
@@ -317,26 +329,23 @@ public class PtGen {
 
 			break;
 		case 43:
-			fromClosed=true;
 			break;
 		case 41:
 			idOuV = 0;
 
 			break;
 		case 42:
-			fromClosed = true;
 			idOuV = -1;
 			identCour = -1;
 			break;
 		case 6:
+			identCour = presentIdent(1);
 			if (identCour == -1) {
 				// verifEnt();
 				if (tCour == ENT && idOuV != -1) {
 					po.produire(EMPILER);
 					po.produire(vCour);
-					if (po.getIpo() > 35) {
-						// System.out.println("produced : EMPILER " +vCour);
-					}
+
 				}
 			} else {
 				int categor = tabSymb[identCour].categorie;
@@ -348,7 +357,24 @@ public class PtGen {
 				case VARGLOBALE:
 					po.produire(CONTENUG);
 					po.produire(tabSymb[identCour].info);
+					if("module".equals(desc.getUnite())) {
+						modifVecteurTrans(TRANSDON);
+					}
 					break;
+				case VARLOCALE,PARAMFIXE:
+					po.produire(CONTENUL);
+				po.produire(tabSymb[identCour].info);
+				po.produire(0);
+				break;
+				case PARAMMOD:
+					po.produire(CONTENUL);
+					po.produire(tabSymb[identCour].info);
+					po.produire(1);
+					break;
+				default:
+
+					break;
+
 				}
 			}
 			po.produire(MUL);
@@ -358,12 +384,13 @@ public class PtGen {
 			break;
 
 		case 7:
-			// identCour = presentIdent(1);
+			identCour = presentIdent(1);
 			if (identCour == -1) {
-				// verifEnt();
+
 				if (tCour == ENT && idOuV != -1 && idOuV!=1) {
 					po.produire(EMPILER);
 					po.produire(vCour);
+					tCour=ENT;
 				}
 			} else {
 				int categor = tabSymb[identCour].categorie;
@@ -375,6 +402,22 @@ public class PtGen {
 				case VARGLOBALE:
 					po.produire(CONTENUG);
 					po.produire(tabSymb[identCour].info);
+					if("module".equals(desc.getUnite())) {
+						modifVecteurTrans(TRANSDON);
+					}
+					break;
+				case VARLOCALE,PARAMFIXE:
+					po.produire(CONTENUL);
+				po.produire(tabSymb[identCour].info);
+				po.produire(0);
+				break;
+				case PARAMMOD:
+					po.produire(CONTENUL);
+					po.produire(tabSymb[identCour].info);
+					po.produire(1);
+					break;
+				default:
+
 					break;
 				}
 			}
@@ -390,7 +433,7 @@ public class PtGen {
 			po.produire(ADD);
 			identCour=-1;
 			tCour=ENT;
-			
+
 			break;
 		case 9:
 			// verifEnt();
@@ -398,26 +441,63 @@ public class PtGen {
 			po.produire(SOUS);
 			identCour=-1;
 			tCour=ENT;
-			
+
 			break;
 
 		case 10:
 			int id = presentIdent(1);
-			if (id == 0) {
-				placeIdent(UtilLex.numIdCourant, CONSTANTE, tCour, vCour);
+			if(bc>1) {
+				if(presentIdent(bc)==0) {
+					placeIdent(UtilLex.numIdCourant, CONSTANTE, tCour, vCour);	
+				}else {
+					UtilLex.messErr("constante existante , Local");
+				}
 			}
-
+			else {
+				if (id == 0) {
+					placeIdent(UtilLex.numIdCourant, CONSTANTE, tCour, vCour);
+				}
+			}
 			break;
 
 		case 11:
-			int idV = presentIdent(1);
+			if(bc>1) {
+				
+				if(presentIdent(bc)==0) {
+					placeIdent(UtilLex.numIdCourant, VARLOCALE, tCour, tabSymb[bc-1].info+2);cptlc++;	
+				}else {
+					UtilLex.messErr("variable existante");
+				}
+			}else {
+				int idV = presentIdent(1);
 
-			if (idV == 0) {
-				placeIdent(UtilLex.numIdCourant, VARGLOBALE, tCour, cpt);
-				cpt++;
+				if (idV == 0) {
+					placeIdent(UtilLex.numIdCourant, VARGLOBALE, tCour, cpt);
+					cpt++;
+
+				}else {
+					UtilLex.messErr("variable existante");
+				}
 			}
 			break;
+		case 101:
+			cptlc=0;
+			break;
+		case 100:
+			if(bc>1) {
+				if(presentIdent(bc)==0) {
+					placeIdent(UtilLex.numIdCourant, VARLOCALE, tCour, tabSymb[it].info+1);cptlc++;	
+				}
+			}else {
+				int idV = presentIdent(1);
 
+				if (idV == 0) {
+					placeIdent(UtilLex.numIdCourant, VARGLOBALE, tCour, cpt);
+					cpt++;
+
+				}
+			}
+			break;
 		case 12:
 			tCour = ENT;
 			break;
@@ -434,55 +514,55 @@ public class PtGen {
 
 			po.produire(EG);
 			tCour=BOOL;
-			
+
 			break;
 		case 16:
 
 			po.produire(DIFF);
 			tCour=BOOL;
-			
+
 			break;
 		case 17:
 
 			po.produire(SUP);
 			tCour=BOOL;
-			
+
 			break;
 		case 18:
 
 			po.produire(SUPEG);
 			tCour=BOOL;
-			
+
 			break;
 		case 19:
 
 			po.produire(INF);
 			tCour=BOOL;
-			
+
 			break;
 		case 20:
 
 			po.produire(INFEG);
 			tCour=BOOL;
-			
+
 			break;
 		case 21:
 
 			po.produire(NON);
 			tCour=BOOL;
-			
+
 			break;
 		case 22:
 
 			po.produire(ET);
 			tCour=BOOL;
-			
+
 			break;
 		case 23:
 
 			po.produire(OU);
 			tCour=BOOL;
-			
+
 			break;
 
 		case 24:
@@ -497,9 +577,22 @@ public class PtGen {
 				case VARGLOBALE:
 					po.produire(CONTENUG);
 					po.produire(tabSymb[idId].info);
+					if("module".equals(desc.getUnite())) {
+						modifVecteurTrans(TRANSDON);
+					}
+					break;
+				case VARLOCALE,PARAMFIXE:
+					po.produire(CONTENUL);
+					po.produire(tabSymb[idId].info);
+					po.produire(0);
+				break;
+				case PARAMMOD:
+					po.produire(CONTENUL);
+					po.produire(tabSymb[idId].info);
+					po.produire(1);
 					break;
 
-				// les autres catégories restent à traité .
+					// les autres catégories restent à traité .
 
 				default:
 					break;
@@ -510,47 +603,93 @@ public class PtGen {
 			break;
 
 		case 25: // pour réservé les variables
-			po.produire(RESERVER);
-			po.produire(cpt);
+			if(desc.getUnite()!="module") {
+			if(bc>1) {
+				po.produire(RESERVER);
+				po.produire(cptlc);
+				
+			}else {
+				po.produire(RESERVER);
+				po.produire(cpt);		
+			}
+			}
+			desc.setTailleGlobaux(cpt);
 			break;
 
 		case 26:
+			if(identaff!=-1) {
+				if(bc>1) {
+					// en proc
+					switch(tabSymb[identaff].categorie) {
+					case PARAMMOD:
+						po.produire(AFFECTERL);
+						po.produire(addIdCour);
+						po.produire(1);
+						addIdCour = -1;
+						break;
+					case VARLOCALE:
+						po.produire(AFFECTERL);
+						po.produire(addIdCour);
+						po.produire(0);
+						addIdCour = -1;
+						break;
+					case VARGLOBALE:
+						po.produire(AFFECTERG);
+						po.produire(addIdCour);
+						if("module".equals(desc.getUnite())) {
+							modifVecteurTrans(TRANSDON);
+						}
+						addIdCour = -1;
+					}
 
-			if (addIdCour != -1) {
-				po.produire(AFFECTERG);
-				po.produire(addIdCour);
-				addIdCour = -1;
-			} else {
-				UtilLex.messErr("erreur dans l'@ de ident ");
+				}else {
+					//en globale
+					if (addIdCour != -1) {
+						po.produire(AFFECTERG);
+						po.produire(addIdCour);
+						if("module".equals(desc.getUnite())) {
+							modifVecteurTrans(TRANSDON);
+						}
+						addIdCour = -1;
+					} else {
+						UtilLex.messErr("erreur dans l'@ de ident ");
+					}
+				}
 			}
+			identaff=-1;
 
 			break;
 		case 27:
 			int id_t = presentIdent(1);
 			identCour = id_t;
+			identaff= id_t;
 
 			if (id_t != 0) {
 				int category = tabSymb[id_t].categorie;
-				if (category == CONSTANTE) {
+				switch (category) {
+				case CONSTANTE:
 					UtilLex.messErr("afffectation à une constante");
-				}
-				if (category == VARGLOBALE) {
+					break;
+				case PARAMFIXE:
+					UtilLex.messErr("afffectation à un Param fixe");
+					break;
+				case PRIVEE,PROC:
+					UtilLex.messErr("syntaxe incorrecte");
+				break;
+
+				default:
 					addIdCour = tabSymb[id_t].info;
+					break;
 				}
-			} else {
-				UtilLex.messErr("Variable n'existe pas");
 			}
 			idOuV=1;
 			break;
 
 		case 28:
-			if (idOuV == 0) {
+			if (idOuV == -1) {
 				if (tCour == ENT) {
-
 					po.produire(ECRENT);
-
 				} else if (tCour == BOOL) {
-
 					po.produire(ECRBOOL);
 				} else {
 					UtilLex.messErr("pas d'instruction pour le type neutre");
@@ -572,34 +711,69 @@ public class PtGen {
 			break;
 		case 29:
 			// lire
-				identCour = presentIdent(1);
-				int category = tabSymb[identCour].categorie;
-				int type = tabSymb[identCour].type;
-				switch (category) {
-				case CONSTANTE:
-					UtilLex.messErr("affectation à une constante");
-					break;
-				case VARGLOBALE:
-					if (type == ENT) {
-						po.produire(LIRENT);
-						po.produire(AFFECTERG);
-						
-						po.produire(tabSymb[identCour].info);
-						
-					} else if (type == BOOL) {
-						po.produire(LIREBOOL);
-						po.produire(AFFECTERG);
-						
-						po.produire(tabSymb[identCour].info);
-						
-					} else {
-						UtilLex.messErr("pas d'instruction pour le type neutre");
+			identCour = presentIdent(1);
+			int category = tabSymb[identCour].categorie;
+			int type = tabSymb[identCour].type;
+			switch (category) {
+			case CONSTANTE:
+				UtilLex.messErr("affectation à une constante");
+				break;
+			case VARGLOBALE:
+				if (type == ENT) {
+					po.produire(LIRENT);
+					po.produire(AFFECTERG);
+					po.produire(tabSymb[identCour].info);
+					if("module".equals(desc.getUnite())) {
+						modifVecteurTrans(TRANSDON);
 					}
-					break;
-				default:
-					UtilLex.messErr("err ecrire");
+				} else if (type == BOOL) {
+					po.produire(LIREBOOL);
+					po.produire(AFFECTERG);
+					po.produire(tabSymb[identCour].info);
+					if("module".equals(desc.getUnite())) {
+						modifVecteurTrans(TRANSDON);
+					}
+
+				} else {
+					UtilLex.messErr("pas d'instruction pour le type neutre");
 				}
-			
+				break;
+			case VARLOCALE :
+				if (type == ENT) {
+					po.produire(LIRENT);
+					po.produire(AFFECTERL);
+					po.produire(tabSymb[identCour].info);
+					po.produire(0);
+				} else if (type == BOOL) {
+					po.produire(LIREBOOL);
+					po.produire(AFFECTERL);
+					po.produire(tabSymb[identCour].info);
+					po.produire(0);
+
+				} else {
+					UtilLex.messErr("pas d'instruction pour le type neutre");
+				}
+				break;
+			case PARAMMOD:
+				if (type == ENT) {
+					po.produire(LIRENT);
+					po.produire(AFFECTERL);
+					po.produire(tabSymb[identCour].info);
+					po.produire(1);
+				} else if (type == BOOL) {
+					po.produire(LIREBOOL);
+					po.produire(AFFECTERL);
+					po.produire(tabSymb[identCour].info);
+					po.produire(1);
+
+				} else {
+					UtilLex.messErr("pas d'instruction pour le type neutre");
+				}
+				break;
+			default:
+				UtilLex.messErr("err ecrire");
+			}
+
 
 			break;
 
@@ -608,12 +782,18 @@ public class PtGen {
 			po.produire(BSIFAUX);
 			po.produire(0);
 			pileRep.empiler(po.getIpo());
+			if("module".equals(desc.getUnite())) {
+				modifVecteurTrans(TRANSCODE);
+			}
 			break;
 		case 31:
 			System.out.println("executé");
 			// sinon
 			po.produire(BINCOND);
 			po.produire(0);
+			if("module".equals(desc.getUnite())) {
+				modifVecteurTrans(TRANSCODE);
+			}
 			int si = pileRep.depiler();
 			po.modifier(si, po.getIpo() + 1);
 			pileRep.empiler(po.getIpo());
@@ -634,7 +814,9 @@ public class PtGen {
 			po.produire(BSIFAUX);
 			po.produire(0);
 			pileRep.empiler(po.getIpo());
-
+			if("module".equals(desc.getUnite())) {
+				modifVecteurTrans(TRANSCODE);
+			}
 			break;
 		case 35:
 			// ttq fin
@@ -643,6 +825,9 @@ public class PtGen {
 			po.produire(BINCOND);
 			int ttq_base = pileRep.depiler();
 			po.produire(ttq_base);
+			if("module".equals(desc.getUnite())) {
+				modifVecteurTrans(TRANSCODE);
+			}
 			break;
 		case 60:
 			pileRep.empiler(0);
@@ -652,32 +837,222 @@ public class PtGen {
 			po.produire(BSIFAUX);
 			po.produire(0);
 			pileRep.empiler(po.getIpo());
+			if("module".equals(desc.getUnite())) {
+				modifVecteurTrans(TRANSCODE);
+			}
 			break;
 		case 62:
 			po.modifier(pileRep.depiler(), po.getIpo()+3 );
 			po.produire(BINCOND);
 			po.produire(pileRep.depiler());
 			pileRep.empiler(po.getIpo());
+			if("module".equals(desc.getUnite())) {
+				modifVecteurTrans(TRANSCODE);
+			}
 			break;
-	
+
+		case 63 :
+			po.modifier(pileRep.depiler(), po.getIpo()+1 );
+			break;
+
 		case 64:
 			int t = pileRep.depiler();
 			int l = po.getElt(t);
 			po.modifier(t, po.getIpo()+1 );
 			t=l;
 			l = po.getElt(t);
-			
+
 			while(t!=0) {
-			po.modifier(t, po.getIpo()+1 );
-			t=l;
-			l = po.getElt(t);
-			
+				po.modifier(t, po.getIpo()+1 );
+				t=l;
+				l = po.getElt(t);
 			}
 			break;
-		case 254:
-			po.produire(ARRET);
+
+		case 70:
+			placeIdent(UtilLex.numIdCourant, PROC, NEUTRE, po.getIpo()+1);
+			placeIdent(-1, PRIVEE, NEUTRE, 0);
+			bc=it+1;
+			break;
+
+		case 71 :
+		if(!"module".equals(desc.getUnite())) {
+			po.produire(BINCOND);
+			po.produire(0);
+			pileRep.empiler(po.getIpo());
+			
+		}break;
+		case 73 : 
+
+			if(presentIdent(bc)==0) {
+				placeIdent(UtilLex.numIdCourant, PARAMFIXE, tCour,cptlc);
+				cptlc++;
+			}else {
+				UtilLex.messErr("Param déjà déclaré");
+			}
+
+			break;
+		case 74:
+			if(presentIdent(bc)==0) {
+				placeIdent(UtilLex.numIdCourant, PARAMMOD, tCour,cptlc);
+				cptlc++;
+			}else {
+				UtilLex.messErr("Param déjà déclaré");
+			}
+		
+
+			break;
+
+
+		case 75:
+			tabSymb[bc-1].info=cptlc;
+			if(desc.getUnite()=="module") {
+			int adProc = desc.presentDef(UtilLex.chaineIdent(tabSymb[bc-2].code));
+			if(adProc!= 0) {
+				desc.modifDefAdPo(adProc,tabSymb[bc-2].info);
+				desc.modifDefNbParam(adProc, cptlc);
+			}else {
+				UtilLex.messErr("Proc non déclarer");
+			}
+			}
+			break;
+		case 76 :
+			if(!"module".equals(desc.getUnite())) {
+			po.modifier(pileRep.depiler(), po.getIpo()+1);
+			}
+			break;
+		case 77:
+			int nb = tabSymb[bc-1].info;
+			if(nb==0 && cptlc==0) {
+				it=bc-1;
+				bc = 0;
+			}else {
+			System.out.println("bc = "+bc + " and nb = "+nb );
+			
+			it=bc-1+nb;
+			
+				for (int i =0; i < nb; i++) {
+				tabSymb[bc+i].code=-1;
+				}
+			
+			}
+			bc =0;
+			cptlc=0;
+			po.produire(RETOUR);
+			po.produire(nb);
+			break;
+			
+		case 78:
+			cptpar++;
+			break;
+			
+			
+		case 80:
+			cptpar++;
+			int idfd = presentIdent(1);
+			if(idfd==0) {
+				UtilLex.messErr("variable n'éxiste pas ");
+			}else {
+				switch (tabSymb[idfd].categorie) {
+				case CONSTANTE,PARAMFIXE:
+					UtilLex.messErr("PASSAGE de mauvais type en param mod ");
+					break;
+				case VARGLOBALE:	
+					po.produire(EMPILERADG);
+					po.produire(tabSymb[idfd].info);
+					if("module".equals(desc.getUnite())) {
+						modifVecteurTrans(TRANSDON);
+					}
+					break;
+				case VARLOCALE:
+					po.produire(EMPILERADL);
+					po.produire(tabSymb[idfd].info);
+					po.produire(0);
+					break;
+				case PARAMMOD:
+					po.produire(EMPILERADL);
+					po.produire(tabSymb[idfd].info);
+					po.produire(1);
+					break;
+				default:
+					UtilLex.messErr("PASSAGE de mauvais type en param mod ");
+					break;
+				}
+			}
+			break;
+		case 81:
+			po.produire(APPEL);
+			if(descs==0) {
+				if(cptpar!=tabSymb[identaff+1].info) {
+					UtilLex.messErr("Nombre de paramètre différent " + cptpar + " - " + tabSymb[identaff].info );
+				}
+				po.produire(tabSymb[identaff].info);
+				po.produire(cptpar);
+			}else {
+				System.out.println(desc.toString()+"\n and cptpar is : "+cptpar);
+				
+				if(cptpar!=desc.getRefNbParam(descs)) {
+					UtilLex.messErr("Nombre de paramètre différent de ce que la référence accepte");
+				}
+				po.produire(descs);
+				modifVecteurTrans(REFEXT);
+				po.produire(desc.getRefNbParam(descs));	
+			}
+			cptref=0;
+			cptpar=0;
+			break;
+		case 82:
+			afftabSymb();
+			
+			descs = desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+			if(descs!=0) {
+			identaff=descs;
+//			cptref=0;
+			}else {
+				identaff=presentIdent(1);
+				if(identaff==0) {
+					UtilLex.messErr("Procédure n'éxiste pas ");
+				}
+			}
+			break;
+		case 110:
+			desc.setUnite("programme");
+			break;
+		case 111:
+			desc.setUnite("module");
+			break;
+			
+		case 115 : 
+			desc.ajoutDef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+			break;
+		case 116 : 
+			desc.ajoutRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+			cptref=0;
+			break;
+
+		case 117 : 
+			cptref++;
+			System.out.println(cptref);
+			break;
+		case 118 : 
+			int adRef = desc.presentRef(UtilLex.chaineIdent(UtilLex.numIdCourant));
+			System.out.println(cptref);
+			desc.modifRefNbParam(adRef, cptref);
+			placeIdent(UtilLex.numIdCourant, PROC, NEUTRE, adRef);
+			placeIdent(-1, PRIVEE, NEUTRE, cptref);
+			break;
+
+		case 254:	
+			if(desc.getUnite()!="module") {
+				po.produire(ARRET);
+			}
+			desc.setTailleCode(po.getIpo());
+			desc.ecrireDesc(UtilLex.nomSource);
+			System.out.println(po.getIpo());
 			po.constObj();
 			po.constGen();
+			
+			System.out.println(desc.getTailleCode());
 			break;
 		case 255:
 			afftabSymb(); // affichage de la table des symboles en fin de compilation
